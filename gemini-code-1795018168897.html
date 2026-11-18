@@ -1,0 +1,3605 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Produksi Control System - Line 4.1 Malkist Crackers</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --bg-gradient:
+        radial-gradient(circle at 12% 18%, rgba(186, 230, 253, 0.75) 0%, transparent 42%),
+        radial-gradient(circle at 88% 15%, rgba(224, 231, 255, 0.8) 0%, transparent 45%),
+        radial-gradient(circle at 75% 85%, rgba(209, 250, 229, 0.6) 0%, transparent 45%),
+        linear-gradient(135deg, #f8fafc 0%, #eff6ff 50%, #f1f5f9 100%);
+      --glass-card: rgba(255, 255, 255, 0.72);
+      --glass-card-strong: rgba(255, 255, 255, 0.92);
+      --glass-border: rgba(255, 255, 255, 0.95);
+      --glass-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+      --glass-sidebar: rgba(255, 255, 255, 0.76);
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --success: #16a34a;
+      --success-hover: #15803d;
+      --danger: #dc2626;
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --radius: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    html, body {
+      width: 100%;
+      min-height: 100vh;
+      background: var(--bg-gradient);
+      background-attachment: fixed;
+      color: var(--text-main);
+    }
+
+    .hidden { display: none !important; }
+
+    /* ================= KOMPONEN UMUM LIGHT GLASSMORPHISM ================= */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 10px;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn-block { width: 100%; }
+    .btn-sm { padding: 6px 12px; font-size: 12.5px; }
+    .btn-xs { padding: 5px 8px; font-size: 11px; border-radius: 7px; white-space: nowrap; }
+    .btn-lg { padding: 12px 24px; font-size: 15px; }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #2563eb, #3b82f6);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+    }
+    .btn-primary:hover:not(:disabled) {
+      background: linear-gradient(135deg, #1d4ed8, #2563eb);
+      transform: translateY(-1px);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, #16a34a, #22c55e);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(22, 163, 74, 0.25);
+    }
+    .btn-success:hover:not(:disabled) {
+      background: linear-gradient(135deg, #15803d, #16a34a);
+      transform: translateY(-1px);
+    }
+
+    .btn-outline {
+      background: rgba(255, 255, 255, 0.85);
+      color: #1e293b;
+      border: 1.5px solid rgba(203, 213, 225, 0.85);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
+    }
+    .btn-outline:hover:not(:disabled) {
+      background: #ffffff;
+      border-color: #94a3b8;
+    }
+
+    .btn-danger-soft {
+      background: rgba(254, 242, 242, 0.9);
+      color: var(--danger);
+      border: 1px solid #fecaca;
+      padding: 7px 10px;
+      font-size: 12px;
+      border-radius: 8px;
+    }
+    .btn-danger-soft:hover:not(:disabled) { background: #fee2e2; }
+
+    .form-group { margin-bottom: 12px; }
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: #334155;
+      margin-bottom: 5px;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1.5px solid rgba(203, 213, 225, 0.8);
+      border-radius: 10px;
+      font-size: 13.5px;
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.88);
+      transition: all 0.15s ease;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.14);
+    }
+
+    .form-control[readonly] {
+      background: rgba(241, 245, 249, 0.85);
+      color: #475569;
+      font-weight: 600;
+    }
+
+    .card {
+      background: var(--glass-card);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-radius: var(--radius);
+      border: 1.5px solid var(--glass-border);
+      padding: 20px;
+      margin-bottom: 18px;
+      box-shadow: var(--glass-shadow);
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 14px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    /* ================= HALAMAN LOGIN LIGHT GLASS ================= */
+    #loginView {
+      min-height: 100vh;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .login-card {
+      background: rgba(255, 255, 255, 0.84);
+      backdrop-filter: blur(22px);
+      -webkit-backdrop-filter: blur(22px);
+      width: 100%;
+      max-width: 400px;
+      border-radius: 22px;
+      padding: 36px 28px;
+      box-shadow: 0 20px 45px rgba(15, 23, 42, 0.08);
+      border: 1.5px solid #ffffff;
+    }
+
+    .login-brand { text-align: center; margin-bottom: 24px; }
+
+    .login-badge {
+      display: inline-block;
+      background: rgba(37, 99, 235, 0.1);
+      color: var(--primary);
+      font-size: 11.5px;
+      font-weight: 800;
+      padding: 5px 14px;
+      border-radius: 999px;
+      margin-bottom: 10px;
+      letter-spacing: 0.6px;
+      border: 1px solid rgba(37, 99, 235, 0.2);
+    }
+
+    .login-brand h1 { font-size: 22px; color: #0f172a; font-weight: 800; }
+    .login-brand p { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+
+    .login-error {
+      background: #fef2f2;
+      color: var(--danger);
+      border: 1px solid #fecaca;
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 13px;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .db-status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 999px;
+      margin-top: 10px;
+      background: #eff6ff;
+      color: #1d4ed8;
+    }
+
+    /* ================= LAYOUT UTAMA & SIDEBAR LIGHT GLASS ================= */
+    #appView { display: flex; min-height: 100vh; width: 100%; }
+
+    .sidebar {
+      width: 265px;
+      background: var(--glass-sidebar);
+      backdrop-filter: blur(22px);
+      -webkit-backdrop-filter: blur(22px);
+      color: #0f172a;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      transition: transform 0.25s ease;
+      z-index: 50;
+      border-right: 1.5px solid rgba(255, 255, 255, 0.95);
+      box-shadow: 4px 0 24px rgba(15, 23, 42, 0.04);
+    }
+
+    .sidebar-header {
+      padding: 22px 20px;
+      border-bottom: 1px solid rgba(203, 213, 225, 0.55);
+    }
+
+    .sidebar-header h2 { font-size: 17px; font-weight: 800; color: #0f172a; line-height: 1.3; }
+    .sidebar-header span { display: block; font-size: 12px; font-weight: 600; color: var(--primary); margin-top: 3px; }
+
+    .user-profile-box {
+      margin: 16px;
+      padding: 14px;
+      background: rgba(255, 255, 255, 0.78);
+      border-radius: 12px;
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
+    }
+
+    .user-name { font-size: 14px; font-weight: 700; color: #0f172a; margin-bottom: 6px; }
+
+    .role-badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .role-ADMIN { background: #fef3c7; color: #92400e; }
+    .role-OPERATOR { background: #dbeafe; color: #1e40af; }
+    .role-VIEWER { background: #e2e8f0; color: #334155; }
+
+    .nav-menu {
+      padding: 8px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex: 1;
+    }
+
+    .nav-btn {
+      width: 100%;
+      text-align: left;
+      padding: 11px 14px;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: #475569;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .nav-btn:hover {
+      background: rgba(255, 255, 255, 0.85);
+      color: #0f172a;
+      border-color: rgba(226, 232, 240, 0.9);
+    }
+
+    .nav-btn.active {
+      background: linear-gradient(135deg, #2563eb, #3b82f6);
+      color: #ffffff;
+      border-color: rgba(37, 99, 235, 0.3);
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);
+    }
+
+    .sidebar-footer {
+      padding: 16px;
+      border-top: 1px solid rgba(203, 213, 225, 0.55);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .btn-sync {
+      background: rgba(239, 246, 255, 0.9);
+      color: #1d4ed8;
+      border: 1px solid #bfdbfe;
+    }
+    .btn-sync:hover:not(:disabled) { background: #dbeafe; }
+
+    .btn-logout {
+      background: rgba(254, 242, 242, 0.9);
+      color: #dc2626;
+      border: 1px solid #fecaca;
+    }
+    .btn-logout:hover { background: #dc2626; color: #ffffff; }
+
+    .mobile-header {
+      display: none;
+      background: rgba(255, 255, 255, 0.86);
+      backdrop-filter: blur(18px);
+      color: #0f172a;
+      padding: 12px 16px;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      border-bottom: 1px solid rgba(203, 213, 225, 0.75);
+    }
+
+    .mobile-header h3 { font-size: 15px; font-weight: 800; color: #0f172a; }
+
+    .hamburger-btn {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      color: #0f172a;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.35);
+      backdrop-filter: blur(4px);
+      z-index: 45;
+    }
+
+    .main-content { flex: 1; padding: 24px; max-width: 100%; overflow-x: hidden; }
+
+    .page-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .page-header h1 { font-size: 22px; font-weight: 800; color: #0f172a; }
+    .page-header p { font-size: 13px; color: #475569; margin-top: 2px; }
+    .filter-label-dark { font-size: 13px; font-weight: 700; color: #1e293b; }
+
+    /* ================= DASHBOARD PRODUKSI ================= */
+    .planning-box {
+      border: 2px dashed rgba(148, 163, 184, 0.55);
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.55);
+    }
+
+    .planning-box img {
+      max-width: 100%;
+      max-height: 480px;
+      border-radius: 10px;
+      border: 1px solid #cbd5e1;
+      object-fit: contain;
+      display: block;
+      margin: 0 auto;
+    }
+
+    .planning-meta { font-size: 12px; color: var(--text-muted); margin-top: 8px; }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(195px, 1fr));
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .kpi-card {
+      background: var(--glass-card);
+      backdrop-filter: blur(18px);
+      border: 1.5px solid var(--glass-border);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--glass-shadow);
+    }
+
+    .kpi-label {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .kpi-value { font-size: 24px; font-weight: 800; color: #0f172a; margin-top: 4px; }
+    .kpi-sub { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+
+    .shift-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .shift-card {
+      border: 1.5px solid #ffffff;
+      border-radius: 14px;
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.85);
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+    }
+
+    .shift-card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(203, 213, 225, 0.6);
+      padding-bottom: 10px;
+      margin-bottom: 12px;
+    }
+
+    .status-pill { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 999px; }
+    .status-ok { background: #dcfce7; color: #166534; }
+    .status-wait { background: #e2e8f0; color: #475569; }
+
+    .shift-stat-row { display: flex; justify-content: space-between; font-size: 13px; padding: 4px 0; }
+
+    .mini-sku-list {
+      margin-top: 10px;
+      padding-top: 8px;
+      border-top: 1px dashed #cbd5e1;
+      font-size: 12px;
+    }
+
+    .mini-sku-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 3px 0;
+      color: #334155;
+    }
+
+    /* ================= TABEL & FORM LHP / EKSPOR ================= */
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+
+    .sub-divider {
+      border-top: 1px dashed rgba(148, 163, 184, 0.55);
+      margin: 14px 0;
+      padding-top: 14px;
+    }
+
+    .table-responsive {
+      width: 100%;
+      overflow-x: auto;
+      border: 1px solid rgba(203, 213, 225, 0.8);
+      border-radius: 12px;
+      margin-bottom: 12px;
+      background: rgba(255, 255, 255, 0.72);
+    }
+
+    table.lhp-table { width: 100%; border-collapse: collapse; min-width: 680px; }
+    table.ekspor-table { width: 100%; border-collapse: collapse; min-width: 1060px; }
+
+    table.lhp-table th, table.ekspor-table th {
+      background: rgba(248, 250, 252, 0.96);
+      font-size: 12px;
+      font-weight: 800;
+      color: #1e293b;
+      text-align: left;
+      padding: 11px 8px;
+      border-bottom: 1px solid #cbd5e1;
+    }
+
+    table.lhp-table td, table.ekspor-table td {
+      padding: 7px 6px;
+      border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+      vertical-align: middle;
+    }
+
+    table.lhp-table tfoot td {
+      background: rgba(239, 246, 255, 0.92);
+      font-weight: 800;
+      color: #0f172a;
+      padding: 10px;
+      border-top: 2px solid #bfdbfe;
+    }
+
+    .table-input, .table-select {
+      width: 100%;
+      padding: 7px 9px;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 13px;
+      background: #ffffff;
+      color: #0f172a;
+    }
+
+    .table-input:focus, .table-select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12);
+    }
+
+    .kodefikasi-stack { display: flex; flex-direction: column; gap: 5px; }
+    .kodefikasi-stack .table-input { padding: 5px 8px; font-size: 12.5px; }
+
+    /* Sel Foto IK Per Baris SKU */
+    .row-ik-cell { display: flex; align-items: center; gap: 6px; }
+
+    .row-ik-thumb {
+      width: 46px;
+      height: 36px;
+      border-radius: 6px;
+      border: 1.5px solid #93c5fd;
+      object-fit: cover;
+      cursor: pointer;
+      background: #f8fafc;
+      flex-shrink: 0;
+      transition: transform 0.15s ease;
+    }
+
+    .row-ik-thumb:hover { transform: scale(1.08); border-color: var(--primary); }
+
+    .table-select.verif-yes { background: #dcfce7; color: #166534; border-color: #86efac; font-weight: 700; }
+    .table-select.verif-no { background: #fef3c7; color: #92400e; border-color: #fcd34d; font-weight: 700; }
+
+    .ach-cell {
+      font-weight: 700;
+      font-size: 13px;
+      white-space: nowrap;
+      text-align: right;
+      padding-right: 12px !important;
+    }
+
+    /* Downtime Multi-Row & Summary Bar */
+    .dt-row {
+      display: grid;
+      grid-template-columns: 1.1fr 2fr 0.8fr auto;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 10px;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid rgba(203, 213, 225, 0.8);
+      border-radius: 10px;
+    }
+
+    .dt-summary-bar {
+      background: rgba(239, 246, 255, 0.9);
+      border: 1.5px solid #bfdbfe;
+      border-radius: 10px;
+      padding: 12px 16px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .dt-summary-bar span { font-size: 13px; color: #1e40af; font-weight: 600; }
+    .dt-summary-bar strong { font-size: 16px; color: #0f172a; }
+
+    /* Kendala 5 Kolom */
+    .kendala-row {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr 1.2fr 1fr 1fr auto;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 10px;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid rgba(203, 213, 225, 0.8);
+      border-radius: 10px;
+    }
+
+    .draft-banner {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 6px 12px;
+      border-radius: 8px;
+      background: #fefce8;
+      color: #854d0e;
+      border: 1px solid #fde047;
+    }
+
+    .ekspor-counter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.82);
+      border: 1px solid rgba(203, 213, 225, 0.85);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    /* ================= PREVENTIF MAINTENANCE (BLOK PER MESIN + MULTI ACTION PLAN) ================= */
+    .pm-machine-block {
+      background: rgba(255, 255, 255, 0.86);
+      border: 1.5px solid #cbd5e1;
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 14px;
+      box-shadow: 0 3px 10px rgba(15, 23, 42, 0.03);
+    }
+
+    .pm-machine-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding-bottom: 10px;
+      margin-bottom: 10px;
+      border-bottom: 1px dashed #cbd5e1;
+    }
+
+    .pm-machine-title-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+      min-width: 240px;
+    }
+
+    .pm-machine-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #dbeafe;
+      color: #1e40af;
+      font-weight: 800;
+      font-size: 12.5px;
+      padding: 5px 10px;
+      border-radius: 8px;
+      white-space: nowrap;
+    }
+
+    .pm-action-header-desktop {
+      display: grid;
+      grid-template-columns: 2.2fr 0.75fr 0.95fr 1.05fr 1.6fr auto;
+      gap: 8px;
+      padding: 0 4px 6px 4px;
+      font-size: 11.5px;
+      font-weight: 800;
+      color: #475569;
+    }
+
+    .pm-action-row {
+      display: grid;
+      grid-template-columns: 2.2fr 0.75fr 0.95fr 1.05fr 1.6fr auto;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 8px;
+      padding: 8px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+    }
+
+    .pm-field-wrap label {
+      display: none;
+      font-size: 11px;
+      font-weight: 700;
+      color: #475569;
+      margin-bottom: 3px;
+    }
+
+    .prio-p0 { background: #fee2e2; color: #991b1b; border-color: #fca5a5; font-weight: 800; }
+    .prio-p1 { background: #fef3c7; color: #92400e; border-color: #fcd34d; font-weight: 700; }
+    .prio-p2 { background: #e0f2fe; color: #075985; border-color: #7dd3fc; font-weight: 700; }
+
+    .pm-st-open { background: #fee2e2; color: #991b1b; border-color: #fca5a5; font-weight: 700; }
+    .pm-st-progress { background: #dbeafe; color: #1e40af; border-color: #93c5fd; font-weight: 700; }
+    .pm-st-close { background: #dcfce7; color: #166534; border-color: #86efac; font-weight: 700; }
+
+    /* ================= MODAL SUMMARY & LIGHTBOX FOTO IK ================= */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.45);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 200;
+    }
+
+    .modal-box {
+      background: var(--glass-card-strong);
+      backdrop-filter: blur(22px);
+      width: 100%;
+      max-width: 540px;
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.22);
+      border: 1.5px solid #ffffff;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .modal-header h3 { font-size: 17px; font-weight: 800; color: #0f172a; }
+
+    .summary-textarea {
+      width: 100%;
+      height: 360px;
+      padding: 12px;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 10px;
+      background: #f8fafc;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 12.5px;
+      line-height: 1.5;
+      color: #0f172a;
+      resize: vertical;
+      margin-bottom: 14px;
+    }
+
+    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+
+    #toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(14px);
+      color: #0f172a;
+      padding: 12px 18px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 700;
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.14);
+      z-index: 999;
+      max-width: 340px;
+      border: 1.5px solid #cbd5e1;
+    }
+
+    @media (max-width: 960px) {
+      .kendala-row { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 768px) {
+      #appView { flex-direction: column; }
+      .mobile-header { display: flex; }
+
+      .sidebar {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        transform: translateX(-100%);
+      }
+      .sidebar.open { transform: translateX(0); }
+      .sidebar-overlay.open { display: block; }
+
+      .main-content { padding: 14px; }
+      .grid-2, .grid-3, .grid-4, .dt-row, .kendala-row { grid-template-columns: 1fr; }
+
+      /* === TAMPILAN MOBILE PENUH UNTUK PREVENTIF MAINTENANCE === */
+      .pm-action-header-desktop { display: none; }
+
+      .pm-action-row {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        background: #ffffff;
+        border: 1.5px solid #cbd5e1;
+        padding: 10px;
+      }
+
+      .pm-field-wrap label { display: block; }
+      .pm-field-action { grid-column: 1 / -1; }
+      .pm-field-ket { grid-column: 1 / -1; }
+      .pm-field-del { grid-column: 1 / -1; text-align: right; }
+
+      /* === TAMPILAN MOBILE PENUH UNTUK TABEL OUTPUT SKU (LHP) === */
+      .table-responsive { border: none; background: transparent; overflow-x: visible; }
+
+      table.lhp-table, table.lhp-table tbody, table.lhp-table tfoot {
+        display: block;
+        width: 100%;
+        min-width: 0;
+      }
+
+      table.lhp-table thead { display: none; }
+
+      table.lhp-table tbody tr {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        background: rgba(255, 255, 255, 0.88);
+        border: 1.5px solid #cbd5e1;
+        border-radius: 12px;
+        padding: 12px;
+        margin-bottom: 10px;
+      }
+
+      table.lhp-table tbody td { display: block; padding: 0; border: none; }
+
+      table.lhp-table tbody td::before {
+        display: block;
+        font-size: 11px;
+        font-weight: 700;
+        color: #475569;
+        margin-bottom: 3px;
+      }
+
+      table.lhp-table tbody td:nth-child(1) { grid-column: 1 / -1; }
+      table.lhp-table tbody td:nth-child(1)::before { content: "Nama SKU"; }
+      table.lhp-table tbody td:nth-child(2)::before { content: "Kode EO"; }
+      table.lhp-table tbody td:nth-child(3)::before { content: "Planning"; }
+      table.lhp-table tbody td:nth-child(4)::before { content: "Aktual"; }
+
+      table.lhp-table tbody td:nth-child(5) {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #eff6ff;
+        border: 1px solid #bfdbfe;
+        border-radius: 8px;
+        padding: 8px 10px;
+        margin-top: 16px;
+        text-align: right;
+      }
+      table.lhp-table tbody td:nth-child(5)::before {
+        content: "Ach:";
+        margin-bottom: 0;
+        color: #1e40af;
+      }
+
+      table.lhp-table tfoot tr {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        background: rgba(239, 246, 255, 0.96);
+        border: 1.5px solid #93c5fd;
+        border-radius: 12px;
+        padding: 12px;
+      }
+
+      table.lhp-table tfoot td { display: block; padding: 0; border: none; background: transparent; }
+
+      table.lhp-table tfoot td:nth-child(1) {
+        grid-column: 1 / -1;
+        font-size: 12px;
+        border-bottom: 1px dashed #93c5fd;
+        padding-bottom: 6px;
+        margin-bottom: 2px;
+      }
+
+      table.lhp-table tfoot td:nth-child(2)::before {
+        content: "Total Plan";
+        display: block;
+        font-size: 10.5px;
+        font-weight: 600;
+        color: #475569;
+      }
+
+      table.lhp-table tfoot td:nth-child(3)::before {
+        content: "Total Aktual";
+        display: block;
+        font-size: 10.5px;
+        font-weight: 600;
+        color: #475569;
+      }
+
+      table.lhp-table tfoot td:nth-child(4) { text-align: left !important; }
+      table.lhp-table tfoot td:nth-child(4)::before {
+        content: "Total Ach";
+        display: block;
+        font-size: 10.5px;
+        font-weight: 600;
+        color: #475569;
+      }
+
+      /* === TAMPILAN MOBILE PENUH UNTUK TABEL KONTROL EKSPOR === */
+      table.ekspor-table, table.ekspor-table tbody {
+        display: block;
+        width: 100%;
+        min-width: 0;
+      }
+
+      table.ekspor-table thead { display: none; }
+
+      table.ekspor-table tbody tr {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        background: rgba(255, 255, 255, 0.88);
+        border: 1.5px solid #cbd5e1;
+        border-radius: 12px;
+        padding: 12px;
+        margin-bottom: 10px;
+      }
+
+      table.ekspor-table tbody td { display: block; padding: 0; border: none; }
+
+      table.ekspor-table tbody td:not(:nth-child(1)):not(:nth-child(10))::before {
+        display: block;
+        font-size: 11px;
+        font-weight: 700;
+        color: #475569;
+        margin-bottom: 3px;
+      }
+
+      table.ekspor-table tbody td:nth-child(1) {
+        grid-column: 1 / 2;
+        text-align: left !important;
+        font-size: 13px;
+      }
+      table.ekspor-table tbody td:nth-child(1)::before { content: "Item #"; display: inline; }
+
+      table.ekspor-table tbody td:nth-child(10) { grid-column: 2 / 3; text-align: right !important; }
+      table.ekspor-table tbody td:nth-child(2) { grid-column: 1 / -1; }
+      table.ekspor-table tbody td:nth-child(2)::before { content: "Nama SKU"; }
+      table.ekspor-table tbody td:nth-child(3)::before { content: "Foto IK"; }
+      table.ekspor-table tbody td:nth-child(4)::before { content: "Nomor EO"; }
+      table.ekspor-table tbody td:nth-child(5) { grid-column: 1 / -1; }
+      table.ekspor-table tbody td:nth-child(5)::before { content: "Kodefikasi (2 Baris)"; }
+      table.ekspor-table tbody td:nth-child(6)::before { content: "Qty Target"; }
+      table.ekspor-table tbody td:nth-child(7)::before { content: "Kekurangan"; }
+      table.ekspor-table tbody td:nth-child(8) { grid-column: 1 / -1; }
+      table.ekspor-table tbody td:nth-child(8)::before { content: "Status Keterangan"; }
+      table.ekspor-table tbody td:nth-child(9) { grid-column: 1 / -1; }
+      table.ekspor-table tbody td:nth-child(9)::before { content: "Note"; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==================== HALAMAN LOGIN ==================== -->
+  <div id="loginView">
+    <div class="login-card">
+      <div class="login-brand">
+        <span class="login-badge">LINE 4.1 MALKIST CRACKERS</span>
+        <h1>Produksi Control System</h1>
+        <p>Masuk menggunakan akun Shift atau Viewer</p>
+        <div id="supabaseConnStatus" class="db-status-pill">Menghubungkan ke Supabase...</div>
+      </div>
+
+      <div id="loginError" class="login-error hidden"></div>
+
+      <div class="form-group">
+        <label for="loginUsername">Username</label>
+        <input type="text" id="loginUsername" class="form-control" placeholder="Contoh: shift1" autocomplete="off" />
+      </div>
+
+      <div class="form-group">
+        <label for="loginPassword">Password / PIN</label>
+        <input type="password" id="loginPassword" class="form-control" placeholder="Masukkan PIN" />
+      </div>
+
+      <button type="button" id="btnLoginSubmit" class="btn btn-primary btn-block btn-lg" style="margin-top: 8px;">
+        Masuk ke Sistem
+      </button>
+    </div>
+  </div>
+
+  <!-- ==================== APLIKASI UTAMA ==================== -->
+  <div id="appView" class="hidden">
+    <div class="mobile-header">
+      <h3>Produksi Control System</h3>
+      <button type="button" id="btnMobileMenu" class="hamburger-btn">☰ Menu</button>
+    </div>
+
+    <div id="sidebarOverlay" class="sidebar-overlay"></div>
+
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-header">
+        <h2>Produksi Control System</h2>
+        <span>Line 4.1 Malkist Crackers</span>
+      </div>
+
+      <div class="user-profile-box">
+        <div id="profileName" class="user-name">-</div>
+        <span id="profileRoleBadge" class="role-badge role-VIEWER">VIEWER</span>
+      </div>
+
+      <nav class="nav-menu">
+        <button type="button" id="navDashboard" class="nav-btn active">Dashboard Produksi</button>
+        <button type="button" id="navLaporan" class="nav-btn">Laporan Produksi</button>
+        <button type="button" id="navEkspor" class="nav-btn">Kontrol Ekspor (Weekly)</button>
+        <button type="button" id="navPm" class="nav-btn">Preventif Maintenance</button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button type="button" id="btnSyncData" class="btn btn-sync btn-block">↻ Sync Data</button>
+        <button type="button" id="btnLogout" class="btn btn-logout btn-block">Keluar / Logout</button>
+      </div>
+    </aside>
+
+    <main class="main-content">
+
+      <!-- ==================== MENU 1: DASHBOARD ==================== -->
+      <section id="sectionDashboard">
+        <div class="page-header">
+          <div>
+            <h1>Dashboard Informasi Produksi</h1>
+            <p>Monitoring Planning Weekly &amp; Achievement Shift Line 4.1</p>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <label for="dashDateFilter" class="filter-label-dark">Tanggal:</label>
+            <input type="date" id="dashDateFilter" class="form-control" style="width: auto;" />
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">
+            <span>Jadwal &amp; Planning Weekly (Line 4.1)</span>
+            <div id="uploadPlanningControls" class="hidden">
+              <input type="file" id="planningFileInput" accept="image/*" class="hidden" />
+              <button type="button" id="btnUploadPlanning" class="btn btn-primary btn-sm">
+                + Upload / Ganti Foto Planning
+              </button>
+            </div>
+          </div>
+
+          <div class="planning-box">
+            <img id="planningPreviewImg" class="hidden" alt="Foto Planning Weekly" />
+            <div id="planningEmptyState" style="padding: 32px 12px; color: #475569; font-size: 14px;">
+              Belum ada foto Planning Weekly yang diunggah.
+            </div>
+            <div id="planningMetaInfo" class="planning-meta"></div>
+          </div>
+        </div>
+
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-label">Total Planning Hari Ini</div>
+            <div id="kpiTotalPlan" class="kpi-value">0</div>
+            <div class="kpi-sub">Akumulasi Shift 1 - 3</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Total Aktual Output</div>
+            <div id="kpiTotalAkt" class="kpi-value">0</div>
+            <div class="kpi-sub">Akumulasi Shift 1 - 3</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Achievement Harian</div>
+            <div id="kpiTotalAch" class="kpi-value" style="color: var(--primary);">0%</div>
+            <div class="kpi-sub">Aktual / Planning</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Total Downtime &amp; Waste</div>
+            <div id="kpiTotalDt" class="kpi-value" style="font-size: 20px;">0 mnt (0%)</div>
+            <div id="kpiTotalWaste" class="kpi-sub">Total Waste: 0 kg</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">
+            <span>Ringkasan Achievement Per Shift</span>
+            <span id="dashDateLabel" style="font-size: 13px; color: var(--text-muted); font-weight: 600;"></span>
+          </div>
+          <div id="shiftSummaryGrid" class="shift-grid"></div>
+        </div>
+      </section>
+
+      <!-- ==================== MENU 2: INPUT LHP PRODUKSI ==================== -->
+      <section id="sectionLaporan" class="hidden">
+        <div class="page-header">
+          <div>
+            <h1>Input Laporan Hasil Produksi (LHP)</h1>
+            <p>Auto-draft aktif secara real-time di perangkat ini</p>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+            <button type="button" id="btnPreviewSummary" class="btn btn-outline btn-sm">
+              Lihat Summary WA
+            </button>
+            <div id="formStatusBadge" class="draft-banner">Auto-Draft Siap</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">1. Identitas Shift</div>
+          <div class="grid-3">
+            <div class="form-group">
+              <label for="lhpTanggal">Tanggal Produksi</label>
+              <input type="date" id="lhpTanggal" class="form-control" />
+            </div>
+            <div class="form-group">
+              <label for="lhpShift">Shift</label>
+              <select id="lhpShift" class="form-control">
+                <option value="Shift 1">Shift 1</option>
+                <option value="Shift 2">Shift 2</option>
+                <option value="Shift 3">Shift 3</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="lhpPelapor">Pelapor</label>
+              <input type="text" id="lhpPelapor" class="form-control" readonly />
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">
+            <span>2. Output Produksi Per SKU</span>
+            <button type="button" id="btnAddSku" class="btn btn-outline btn-sm">+ Tambah Baris SKU</button>
+          </div>
+
+          <div class="table-responsive">
+            <table class="lhp-table">
+              <thead>
+                <tr>
+                  <th style="width: 34%;">SKU</th>
+                  <th style="width: 20%;">Kode EO</th>
+                  <th style="width: 17%;">Planning</th>
+                  <th style="width: 17%;">Aktual</th>
+                  <th style="width: 12%; text-align: right;">Ach (%)</th>
+                </tr>
+              </thead>
+              <tbody id="skuTableBody"></tbody>
+              <tfoot>
+                <tr>
+                  <td colspan="2">TOTAL ACHIEVEMENT SHIFT</td>
+                  <td id="totalPlanningCell">0</td>
+                  <td id="totalAktualCell">0</td>
+                  <td id="totalAchCell" style="text-align: right; color: var(--primary);">0.0%</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+          <p style="font-size: 12px; color: var(--text-muted);">
+            * Baris dengan kolom SKU kosong akan otomatis diabaikan saat disimpan.
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="card-title">3. WIP &amp; Waste (Satuan Kg)</div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label for="wipAwal">WIP Awal (kg)</label>
+              <input type="number" step="any" min="0" id="wipAwal" class="form-control" placeholder="0" />
+            </div>
+            <div class="form-group">
+              <label for="wipAkhir">WIP Akhir (kg)</label>
+              <input type="number" step="any" min="0" id="wipAkhir" class="form-control" placeholder="0" />
+            </div>
+          </div>
+
+          <div class="sub-divider">
+            <div class="grid-4">
+              <div class="form-group">
+                <label for="wasteBersihLokal">Waste Bersih Lokal (kg)</label>
+                <input type="number" step="any" min="0" id="wasteBersihLokal" class="form-control" placeholder="0" />
+              </div>
+              <div class="form-group">
+                <label for="wasteBersihEkspor">Waste Bersih Ekspor (kg)</label>
+                <input type="number" step="any" min="0" id="wasteBersihEkspor" class="form-control" placeholder="0" />
+              </div>
+              <div class="form-group">
+                <label for="wasteKotorLokal">Waste Kotor Lokal (kg)</label>
+                <input type="number" step="any" min="0" id="wasteKotorLokal" class="form-control" placeholder="0" />
+              </div>
+              <div class="form-group">
+                <label for="wasteKotorEkspor">Waste Kotor Ekspor (kg)</label>
+                <input type="number" step="any" min="0" id="wasteKotorEkspor" class="form-control" placeholder="0" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">
+            <span>4. Downtime Mesin (Basis 480 Menit Kerja)</span>
+            <button type="button" id="btnAddDt" class="btn btn-outline btn-sm">+ Tambah Downtime</button>
+          </div>
+          <div id="dtContainer"></div>
+          <div class="dt-summary-bar">
+            <span>Total Akumulasi Downtime: <strong id="dtTotalMenitText">0 Menit</strong></span>
+            <span>Persentase Downtime: <strong id="downtimePersenText">0.00%</strong></span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">
+            <span>5. Kendala Mesin / Note (Mesin : Why 1 - Why 2, Waktu, Keterangan)</span>
+            <button type="button" id="btnAddKendala" class="btn btn-outline btn-sm">+ Tambah Kendala</button>
+          </div>
+          <div id="kendalaContainer"></div>
+        </div>
+
+        <div style="display: flex; gap: 12px; justify-content: flex-end; flex-wrap: wrap; margin-bottom: 32px;">
+          <button type="button" id="btnResetForm" class="btn btn-outline">Bersihkan Form</button>
+          <button type="button" id="btnSaveLhp" class="btn btn-success btn-lg">Simpan Laporan ke Cloud</button>
+        </div>
+      </section>
+
+      <!-- ==================== MENU 3: KONTROL EKSPOR (WEEKLY ALL-SHIFT) ==================== -->
+      <section id="sectionEkspor" class="hidden">
+        <div class="page-header">
+          <div>
+            <h1>Kontrol Dokumen &amp; Produk Ekspor (Weekly)</h1>
+            <p>Sistem All Shift per Tahun &amp; Week — Dilengkapi Foto IK per SKU</p>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+            <div id="eksporStatusBadge" class="draft-banner">Weekly All-Shift Siap</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">
+            <span>1. Periode Kontrol Ekspor (All Shift)</span>
+            <span id="eksporPeriodLabel" style="font-size: 12.5px; color: var(--primary); font-weight: 700;">Tahun 2026 — Week 47 (All Shift)</span>
+          </div>
+
+          <div class="grid-3">
+            <div class="form-group">
+              <label for="eksporTahun">Tahun</label>
+              <select id="eksporTahun" class="form-control"></select>
+            </div>
+            <div class="form-group">
+              <label for="eksporWeek">Week (Minggu Ke-)</label>
+              <select id="eksporWeek" class="form-control"></select>
+            </div>
+            <div class="form-group">
+              <label for="eksporPelapor">Update Terakhir Oleh</label>
+              <input type="text" id="eksporPelapor" class="form-control" readonly />
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">
+            <span>2. Daftar Item &amp; Dokumen Ekspor</span>
+            <div id="eksporRowControls" style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <button type="button" id="btnAddEksporRow" class="btn btn-outline btn-sm">+ Tambah 1 Baris</button>
+              <button type="button" id="btnAddEkspor5Rows" class="btn btn-primary btn-sm">+ Tambah 5 Baris</button>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="ekspor-table">
+              <thead>
+                <tr>
+                  <th style="width: 3%; text-align: center;">No</th>
+                  <th style="width: 11%;">Nama SKU</th>
+                  <th style="width: 11%;">Foto IK (Klik Zoom)</th>
+                  <th style="width: 10%;">Nomor EO</th>
+                  <th style="width: 16%;">Kodefikasi (2 Baris)</th>
+                  <th style="width: 8%;">Qty Target</th>
+                  <th style="width: 8%;">Kekurangan</th>
+                  <th style="width: 11%;">Status Keterangan</th>
+                  <th style="width: 19%;">Note</th>
+                  <th style="width: 3%; text-align: center;">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="eksporTableBody"></tbody>
+            </table>
+          </div>
+
+          <div class="ekspor-counter-bar">
+            <span>Total Item Terisi: <strong id="eksporCountTotal">0</strong></span>
+            <span style="color: #166534;">Sudah Verif: <strong id="eksporCountYes">0</strong></span>
+            <span style="color: #92400e;">Belum Verif: <strong id="eksporCountNo">0</strong></span>
+            <span style="color: #dc2626;">Total Sisa Kekurangan: <strong id="eksporTotalKurang">0</strong></span>
+          </div>
+          <p style="font-size: 11.5px; color: var(--text-muted); margin-top: 8px;">
+            * Klik thumbnail pada kolom <strong>Foto IK</strong> di setiap baris SKU untuk memperbesar gambar. Kolom <strong>Qty Target</strong> dan <strong>Kekurangan</strong> diisi manual sesuai aktual pengecekan.
+          </p>
+        </div>
+
+        <div id="eksporBottomActions" style="display: flex; gap: 12px; justify-content: flex-end; flex-wrap: wrap; margin-bottom: 32px;">
+          <button type="button" id="btnResetEkspor" class="btn btn-outline">Bersihkan Form Ekspor</button>
+          <button type="button" id="btnSaveEkspor" class="btn btn-success btn-lg">Simpan Kontrol Ekspor</button>
+        </div>
+      </section>
+
+      <!-- ==================== MENU 4: PREVENTIF MAINTENANCE (WEEKLY) ==================== -->
+      <section id="sectionPm" class="hidden">
+        <div class="page-header">
+          <div>
+            <h1>Preventif Maintenance Mesin (Weekly)</h1>
+            <p>Monitoring Action Plan, Prioritas (P0/P1/P2), PIC &amp; Status Perbaikan per Week</p>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+            <div id="pmStatusBadge" class="draft-banner">PM Weekly Siap</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">
+            <span>1. Periode Preventif Maintenance (All Shift)</span>
+            <span id="pmPeriodLabel" style="font-size: 12.5px; color: var(--primary); font-weight: 700;">Tahun 2026 — Week 47 (All Shift)</span>
+          </div>
+
+          <div class="grid-3">
+            <div class="form-group">
+              <label for="pmTahun">Tahun</label>
+              <select id="pmTahun" class="form-control"></select>
+            </div>
+            <div class="form-group">
+              <label for="pmWeek">Week (Minggu Ke-)</label>
+              <select id="pmWeek" class="form-control"></select>
+            </div>
+            <div class="form-group">
+              <label for="pmPelapor">Update Terakhir Oleh</label>
+              <input type="text" id="pmPelapor" class="form-control" readonly />
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">
+            <span>2. Daftar Mesin &amp; Action Plan Kendala</span>
+            <div id="pmMachineControls" style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <button type="button" id="btnAddPmMachine" class="btn btn-primary btn-sm">+ Tambah Mesin</button>
+            </div>
+          </div>
+
+          <div id="pmMachineContainer"></div>
+
+          <div class="ekspor-counter-bar">
+            <span>Total Mesin: <strong id="pmCountMachine">0</strong></span>
+            <span>Total Action Plan: <strong id="pmCountAction">0</strong></span>
+            <span style="color: #991b1b;">Prioritas P0: <strong id="pmCountP0">0</strong></span>
+            <span style="color: #b91c1c;">Open: <strong id="pmCountOpen">0</strong></span>
+            <span style="color: #1d4ed8;">On Progress: <strong id="pmCountProgress">0</strong></span>
+            <span style="color: #15803d;">Close: <strong id="pmCountClose">0</strong></span>
+          </div>
+          <p style="font-size: 11.5px; color: var(--text-muted); margin-top: 8px;">
+            * Setiap mesin otomatis menyediakan 2 baris Action Plan untuk 1–2 kendala utama. Klik <strong>+ Tambah Baris</strong> di masing-masing mesin jika kendala lebih dari 2.
+          </p>
+        </div>
+
+        <div id="pmBottomActions" style="display: flex; gap: 12px; justify-content: flex-end; flex-wrap: wrap; margin-bottom: 32px;">
+          <button type="button" id="btnResetPm" class="btn btn-outline">Bersihkan Form PM</button>
+          <button type="button" id="btnSavePm" class="btn btn-success btn-lg">Simpan Preventif Maintenance</button>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ==================== MODAL SUMMARY WHATSAPP ==================== -->
+  <div id="summaryModal" class="modal-backdrop hidden">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Summary Hasil Produksi (Siap Copy WA)</h3>
+        <button type="button" id="btnCloseSummaryX" class="btn btn-outline btn-sm">✕</button>
+      </div>
+      <textarea id="summaryOutputText" class="summary-textarea" readonly></textarea>
+      <div class="modal-actions">
+        <button type="button" id="btnCloseSummary" class="btn btn-outline">Tutup</button>
+        <button type="button" id="btnCopySummary" class="btn btn-primary">Salin Summary (Copy WA)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL PERBESAR FOTO IK PER SKU ==================== -->
+  <div id="ikZoomModal" class="modal-backdrop hidden">
+    <div class="modal-box" style="max-width: 820px;">
+      <div class="modal-header">
+        <h3 id="ikZoomTitle">Foto Instruksi Kerja (IK)</h3>
+        <button type="button" id="btnCloseIkZoom" class="btn btn-outline btn-sm">✕</button>
+      </div>
+      <div style="text-align: center; overflow: auto;">
+        <img id="ikZoomFullImg" src="" alt="Foto IK Full" style="max-width: 100%; max-height: 75vh; border-radius: 10px;" />
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="hidden"></div>
+
+  <script>
+    /* ==========================================================================
+       KONFIGURASI SUPABASE (GANTI DENGAN PROJECT URL & ANON KEY MILIK ANDA)
+       ========================================================================== */
+    const SUPABASE_URL = 'https://sitrxirwdisygiixmsep.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNpdHJ4aXJ3ZGlzeWdpaXhtc2VwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUwMTU0NzksImV4cCI6MjExMDU5MTQ3OX0.sBjU4jdQpTiDkwFlT-9JRsbwB-OfIpa8WzA_-OS_KVY';
+    const STORAGE_BUCKET = 'pcs-images';
+
+    let sb = null;
+    try {
+      if (window.supabase && SUPABASE_URL.indexOf('GANTI_DENGAN') === -1) {
+        sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      }
+    } catch (e) {
+      console.error('Supabase init error:', e);
+    }
+
+    const FALLBACK_USERS = [
+      { username: 'admin', password: '9999', nama: 'Unit Head Line 4.1', role: 'ADMIN' },
+      { username: 'shift1', password: '1111', nama: 'Leader Shift 1', role: 'OPERATOR' },
+      { username: 'shift2', password: '2222', nama: 'Leader Shift 2', role: 'OPERATOR' },
+      { username: 'shift3', password: '3333', nama: 'Leader Shift 3', role: 'OPERATOR' },
+      { username: 'viewer', password: '0000', nama: 'Monitoring / Viewer', role: 'VIEWER' }
+    ];
+
+    /* ==========================================================================
+       SAFE STORAGE & UTILITAS WAKTU WIB
+       ========================================================================== */
+    const memoryFallback = {};
+
+    const Storage = {
+      getSession: function(key) {
+        try { return window.sessionStorage.getItem(key); }
+        catch (e) { return memoryFallback['s_' + key] || null; }
+      },
+      setSession: function(key, val) {
+        try { window.sessionStorage.setItem(key, val); }
+        catch (e) { memoryFallback['s_' + key] = val; }
+      },
+      removeSession: function(key) {
+        try { window.sessionStorage.removeItem(key); }
+        catch (e) { delete memoryFallback['s_' + key]; }
+      },
+      getLocal: function(key) {
+        try { return window.localStorage.getItem(key); }
+        catch (e) { return memoryFallback['l_' + key] || null; }
+      },
+      setLocal: function(key, val) {
+        try { window.localStorage.setItem(key, val); }
+        catch (e) { memoryFallback['l_' + key] = val; }
+      },
+      removeLocal: function(key) {
+        try { window.localStorage.removeItem(key); }
+        catch (e) { delete memoryFallback['l_' + key]; }
+      }
+    };
+
+    const Utils = {
+      getTodayWIB: function() {
+        const nowUtc = Date.now() + (new Date().getTimezoneOffset() * 60000);
+        const wibDate = new Date(nowUtc + (7 * 3600000));
+        return wibDate.toISOString().slice(0, 10);
+      },
+      getNowWIB: function() {
+        const nowUtc = Date.now() + (new Date().getTimezoneOffset() * 60000);
+        const wibDate = new Date(nowUtc + (7 * 3600000));
+        return wibDate.toISOString().replace('T', ' ').slice(0, 19);
+      },
+      getIsoWeekFromStr: function(isoDate) {
+        const parts = String(isoDate || '').split('-');
+        if (parts.length !== 3) return { year: 2026, week: 47 };
+        const d = new Date(Date.UTC(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10)));
+        const dayNum = d.getUTCDay() || 7;
+        d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+        const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+        const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+        return { year: d.getUTCFullYear(), week: weekNo };
+      },
+      formatNumber: function(val) {
+        const num = parseFloat(val) || 0;
+        return num.toLocaleString('id-ID', { maximumFractionDigits: 2 });
+      },
+      formatIndoDateFull: function(isoDate) {
+        if (!isoDate) return '-';
+        const parts = isoDate.split('-');
+        if (parts.length !== 3) return isoDate;
+        const y = parseInt(parts[0], 10);
+        const m = parseInt(parts[1], 10) - 1;
+        const d = parseInt(parts[2], 10);
+        const dt = new Date(y, m, d);
+        const hariList = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+        const bulanList = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+        return hariList[dt.getDay()] + ', ' + d + ' ' + bulanList[m] + ' ' + y;
+      },
+      calcMinutesFromRange: function(rangeStr) {
+        const match = String(rangeStr || '').match(/(\d{1,2})[:.](\d{2})\s*-\s*(\d{1,2})[:.](\d{2})/);
+        if (!match) return null;
+        const h1 = parseInt(match[1], 10);
+        const m1 = parseInt(match[2], 10);
+        const h2 = parseInt(match[3], 10);
+        const m2 = parseInt(match[4], 10);
+        if (h1 > 23 || h2 > 23 || m1 > 59 || m2 > 59) return null;
+        let diff = (h2 * 60 + m2) - (h1 * 60 + m1);
+        if (diff < 0) diff += 24 * 60;
+        return diff;
+      },
+      detectFlag: function(skuText) {
+        const up = String(skuText || '').toUpperCase();
+        if (/\bTH\b/.test(up) || up.indexOf('THAILAND') !== -1) return ' 🇹🇭';
+        if (/\bPH\b/.test(up) || up.indexOf('PHILIPPINES') !== -1) return ' 🇵🇭';
+        if (/\bVN\b/.test(up) || up.indexOf('VIETNAM') !== -1) return ' 🇻🇳';
+        if (/\bMY\b/.test(up) || up.indexOf('MALAYSIA') !== -1) return ' 🇲🇾';
+        return ' 🇮🇩';
+      },
+      escapeHtml: function(str) {
+        return String(str || '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      },
+      escapeAttr: function(str) {
+        return String(str || '')
+          .replace(/&/g, '&amp;')
+          .replace(/"/g, '&quot;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;');
+      },
+      showToast: function(msg, duration) {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.classList.remove('hidden');
+        clearTimeout(toast._timer);
+        toast._timer = setTimeout(function() {
+          toast.classList.add('hidden');
+        }, duration || 3200);
+      },
+      compressImageToBlob: function(file, maxWidth, quality) {
+        return new Promise(function(resolve, reject) {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            const img = new Image();
+            img.onload = function() {
+              const canvas = document.createElement('canvas');
+              let w = img.width;
+              let h = img.height;
+              if (w > maxWidth) {
+                h = Math.round((h * maxWidth) / w);
+                w = maxWidth;
+              }
+              canvas.width = w;
+              canvas.height = h;
+              canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+              canvas.toBlob(function(blob) {
+                if (blob) resolve(blob);
+                else reject(new Error('Gagal mengompresi gambar.'));
+              }, 'image/jpeg', quality || 0.78);
+            };
+            img.onerror = reject;
+            img.src = e.target.result;
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+      },
+      uploadBlobToStorage: async function(folder, filename, blob) {
+        if (!sb) throw new Error('Konfigurasi Supabase belum diisi!');
+        const filePath = folder + '/' + filename;
+        const { error } = await sb.storage
+          .from(STORAGE_BUCKET)
+          .upload(filePath, blob, { contentType: 'image/jpeg', upsert: true });
+        if (error) throw error;
+        const { data } = sb.storage.from(STORAGE_BUCKET).getPublicUrl(filePath);
+        return data.publicUrl + '?t=' + Date.now();
+      }
+    };
+
+    /* ==========================================================================
+       STATE APLIKASI
+       ========================================================================== */
+    const todayStr = Utils.getTodayWIB();
+    const defaultWeekInfo = Utils.getIsoWeekFromStr(todayStr);
+
+    const AppState = {
+      user: null,
+      todayWIB: todayStr,
+      currentYear: defaultWeekInfo.year,
+      currentWeek: defaultWeekInfo.week,
+      users: FALLBACK_USERS.slice(),
+      isLoadingServer: false,
+      isLoadingEkspor: false,
+      isLoadingPm: false
+    };
+
+    /* ==========================================================================
+       AUTENTIKASI & NAVIGASI
+       ========================================================================== */
+    const Auth = {
+      initConnection: async function() {
+        const pill = document.getElementById('supabaseConnStatus');
+        if (!sb) {
+          pill.textContent = '⚠ Isi SUPABASE_URL & KEY di index.html';
+          pill.style.background = '#fef3c7';
+          pill.style.color = '#92400e';
+          return;
+        }
+        try {
+          const { data, error } = await sb.from('app_users').select('username, password, nama, role');
+          if (error) throw error;
+          if (data && data.length > 0) {
+            AppState.users = data;
+          }
+          pill.textContent = '● Terhubung ke Supabase Cloud';
+          pill.style.background = '#dcfce7';
+          pill.style.color = '#166534';
+        } catch (err) {
+          pill.textContent = '⚠ Gagal koneksi DB (Mode Fallback Akun)';
+          pill.style.background = '#fee2e2';
+          pill.style.color = '#991b1b';
+        }
+      },
+
+      showLoginError: function(msg) {
+        const errBox = document.getElementById('loginError');
+        errBox.textContent = msg;
+        errBox.classList.remove('hidden');
+      },
+
+      hideLoginError: function() {
+        document.getElementById('loginError').classList.add('hidden');
+      },
+
+      login: async function() {
+        const username = document.getElementById('loginUsername').value.trim().toLowerCase();
+        const password = document.getElementById('loginPassword').value.trim();
+
+        if (!username || !password) {
+          Auth.showLoginError('Username dan Password/PIN wajib diisi!');
+          return;
+        }
+
+        const btn = document.getElementById('btnLoginSubmit');
+        btn.disabled = true;
+        btn.textContent = 'Memeriksa Akun...';
+
+        if (sb) {
+          try {
+            const { data } = await sb.from('app_users').select('username, password, nama, role');
+            if (data && data.length > 0) AppState.users = data;
+          } catch (e) {}
+        }
+
+        btn.disabled = false;
+        btn.textContent = 'Masuk ke Sistem';
+
+        const matched = AppState.users.find(function(u) {
+          return String(u.username || '').trim().toLowerCase() === username &&
+                 String(u.password || '').trim() === password;
+        });
+
+        if (!matched) {
+          Auth.showLoginError('Username atau Password/PIN salah!');
+          return;
+        }
+
+        Auth.hideLoginError();
+        AppState.user = {
+          username: matched.username,
+          nama: matched.nama,
+          role: String(matched.role || 'VIEWER').toUpperCase()
+        };
+        Storage.setSession('pcs_user_sb', JSON.stringify(AppState.user));
+        Auth.enterApp();
+      },
+
+      logout: function() {
+        Storage.removeSession('pcs_user_sb');
+        AppState.user = null;
+        document.getElementById('appView').classList.add('hidden');
+        document.getElementById('loginView').classList.remove('hidden');
+        document.getElementById('loginPassword').value = '';
+        Auth.hideLoginError();
+      },
+
+      enterApp: function() {
+        document.getElementById('loginView').classList.add('hidden');
+        document.getElementById('appView').classList.remove('hidden');
+
+        document.getElementById('profileName').textContent = AppState.user.nama;
+        const badge = document.getElementById('profileRoleBadge');
+        badge.textContent = AppState.user.role;
+        badge.className = 'role-badge role-' + AppState.user.role;
+
+        const isViewer = AppState.user.role === 'VIEWER';
+        document.getElementById('navLaporan').classList.toggle('hidden', isViewer);
+        document.getElementById('uploadPlanningControls').classList.toggle('hidden', isViewer);
+        document.getElementById('eksporRowControls').classList.toggle('hidden', isViewer);
+        document.getElementById('eksporBottomActions').classList.toggle('hidden', isViewer);
+        document.getElementById('pmMachineControls').classList.toggle('hidden', isViewer);
+        document.getElementById('pmBottomActions').classList.toggle('hidden', isViewer);
+
+        document.getElementById('lhpPelapor').value = AppState.user.nama;
+        document.getElementById('eksporPelapor').value = AppState.user.nama;
+        document.getElementById('pmPelapor').value = AppState.user.nama;
+        Navigation.switchTab('dashboard');
+
+        const dashFilter = document.getElementById('dashDateFilter');
+        if (!dashFilter.value) dashFilter.value = AppState.todayWIB;
+        Dashboard.loadByDate();
+        Dashboard.loadPlanning();
+
+        const lhpDateEl = document.getElementById('lhpTanggal');
+        if (!lhpDateEl.value) {
+          lhpDateEl.value = AppState.todayWIB;
+          LhpForm.loadForDateAndShift();
+        }
+
+        EksporForm.initSelectors();
+        EksporForm.loadForYearAndWeek();
+
+        PmForm.initSelectors();
+        PmForm.loadForYearAndWeek();
+      }
+    };
+
+    const Navigation = {
+      toggleSidebar: function() {
+        document.getElementById('sidebar').classList.toggle('open');
+        document.getElementById('sidebarOverlay').classList.toggle('open');
+      },
+      closeSidebar: function() {
+        document.getElementById('sidebar').classList.remove('open');
+        document.getElementById('sidebarOverlay').classList.remove('open');
+      },
+      switchTab: function(tabName) {
+        if (tabName === 'laporan' && AppState.user && AppState.user.role === 'VIEWER') return;
+        document.getElementById('sectionDashboard').classList.toggle('hidden', tabName !== 'dashboard');
+        document.getElementById('sectionLaporan').classList.toggle('hidden', tabName !== 'laporan');
+        document.getElementById('sectionEkspor').classList.toggle('hidden', tabName !== 'ekspor');
+        document.getElementById('sectionPm').classList.toggle('hidden', tabName !== 'pm');
+
+        document.getElementById('navDashboard').classList.toggle('active', tabName === 'dashboard');
+        document.getElementById('navLaporan').classList.toggle('active', tabName === 'laporan');
+        document.getElementById('navEkspor').classList.toggle('active', tabName === 'ekspor');
+        document.getElementById('navPm').classList.toggle('active', tabName === 'pm');
+        Navigation.closeSidebar();
+      }
+    };
+
+    /* ==========================================================================
+       MENU 1: DASHBOARD & FOTO PLANNING WEEKLY (SUPABASE)
+       ========================================================================== */
+    const Dashboard = {
+      syncAll: async function() {
+        const btn = document.getElementById('btnSyncData');
+        btn.disabled = true;
+        btn.textContent = '↻ Menyinkronkan...';
+        try {
+          AppState.todayWIB = Utils.getTodayWIB();
+          await Promise.all([
+            Dashboard.loadByDate(),
+            Dashboard.loadPlanning()
+          ]);
+          Utils.showToast('Data berhasil disinkronkan dari Supabase');
+        } catch (err) {
+          Utils.showToast('Gagal sinkronisasi: ' + err.message);
+        } finally {
+          btn.disabled = false;
+          btn.textContent = '↻ Sync Data';
+        }
+      },
+
+      loadPlanning: async function() {
+        if (!sb) return;
+        const { data, error } = await sb
+          .from('app_planning')
+          .select('*')
+          .eq('id', 1)
+          .maybeSingle();
+        if (!error && data) {
+          Dashboard.renderPlanning({
+            imageData: data.image_url,
+            updatedAt: data.updated_at,
+            updatedBy: data.updated_by
+          });
+        }
+      },
+
+      renderPlanning: function(planObj) {
+        const img = document.getElementById('planningPreviewImg');
+        const empty = document.getElementById('planningEmptyState');
+        const meta = document.getElementById('planningMetaInfo');
+
+        if (planObj && planObj.imageData) {
+          img.src = planObj.imageData;
+          img.classList.remove('hidden');
+          empty.classList.add('hidden');
+          meta.textContent = 'Terakhir diperbarui: ' + (planObj.updatedAt || '-') + ' WIB oleh ' + (planObj.updatedBy || '-');
+        } else {
+          img.classList.add('hidden');
+          empty.classList.remove('hidden');
+          meta.textContent = '';
+        }
+      },
+
+      uploadPlanning: async function(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        if (!sb) {
+          Utils.showToast('Konfigurasi Supabase belum diisi!');
+          return;
+        }
+
+        const btn = document.getElementById('btnUploadPlanning');
+        btn.disabled = true;
+        btn.textContent = 'Mengunggah Foto...';
+
+        try {
+          const blob = await Utils.compressImageToBlob(file, 1200, 0.80);
+          const publicUrl = await Utils.uploadBlobToStorage('planning', 'weekly_planning.jpg', blob);
+          const now = Utils.getNowWIB();
+          const uploader = AppState.user.nama;
+
+          const { error } = await sb.from('app_planning').upsert({
+            id: 1,
+            updated_at: now,
+            updated_by: uploader,
+            image_url: publicUrl
+          });
+          if (error) throw error;
+
+          Dashboard.renderPlanning({
+            imageData: publicUrl,
+            updatedAt: now,
+            updatedBy: uploader
+          });
+          Utils.showToast('Foto Planning Weekly berhasil diperbarui!');
+        } catch (err) {
+          Utils.showToast('Gagal upload foto: ' + err.message, 4000);
+        } finally {
+          btn.disabled = false;
+          btn.textContent = '+ Upload / Ganti Foto Planning';
+          event.target.value = '';
+        }
+      },
+
+      loadByDate: async function() {
+        const tgl = document.getElementById('dashDateFilter').value || AppState.todayWIB;
+        if (!sb) return;
+
+        const { data, error } = await sb
+          .from('app_lhp_log')
+          .select('*')
+          .eq('tanggal_produksi', tgl)
+          .order('id', { ascending: true });
+
+        if (error) {
+          Utils.showToast('Gagal memuat ringkasan: ' + error.message);
+          return;
+        }
+
+        const shiftMap = {
+          'Shift 1': { shift: 'Shift 1', reported: false, pelapor: '-', waktuInput: '-', planning: 0, aktual: 0, ach: 0, downtimeMenit: 0, downtimePersen: 0, wasteBersihLokal: 0, wasteBersihEkspor: 0, wasteKotorLokal: 0, wasteKotorEkspor: 0, kendala: '-', items: [] },
+          'Shift 2': { shift: 'Shift 2', reported: false, pelapor: '-', waktuInput: '-', planning: 0, aktual: 0, ach: 0, downtimeMenit: 0, downtimePersen: 0, wasteBersihLokal: 0, wasteBersihEkspor: 0, wasteKotorLokal: 0, wasteKotorEkspor: 0, kendala: '-', items: [] },
+          'Shift 3': { shift: 'Shift 3', reported: false, pelapor: '-', waktuInput: '-', planning: 0, aktual: 0, ach: 0, downtimeMenit: 0, downtimePersen: 0, wasteBersihLokal: 0, wasteBersihEkspor: 0, wasteKotorLokal: 0, wasteKotorEkspor: 0, kendala: '-', items: [] }
+        };
+
+        (data || []).forEach(function(row) {
+          const s = shiftMap[row.shift];
+          if (!s) return;
+          const plan = parseFloat(row.planning) || 0;
+          const akt = parseFloat(row.aktual) || 0;
+
+          s.reported = true;
+          s.waktuInput = row.waktu_input || '-';
+          s.pelapor = row.pelapor || '-';
+          s.planning += plan;
+          s.aktual += akt;
+          s.wasteBersihLokal = parseFloat(row.waste_bersih_lokal_kg) || 0;
+          s.wasteBersihEkspor = parseFloat(row.waste_bersih_ekspor_kg) || 0;
+          s.wasteKotorLokal = parseFloat(row.waste_kotor_lokal_kg) || 0;
+          s.wasteKotorEkspor = parseFloat(row.waste_kotor_ekspor_kg) || 0;
+          s.downtimeMenit = parseFloat(row.total_downtime_menit) || 0;
+          s.downtimePersen = parseFloat(row.downtime_persen) || 0;
+          s.kendala = String(row.kendala || '-').replace(/ :: /g, ' ');
+          s.items.push({
+            sku: row.sku,
+            kodeEo: row.kode_eo,
+            planning: plan,
+            aktual: akt,
+            ach: plan > 0 ? Number(((akt / plan) * 100).toFixed(1)) : 0
+          });
+        });
+
+        let totalPlan = 0, totalAkt = 0, totalDowntime = 0, totalWaste = 0;
+
+        ['Shift 1', 'Shift 2', 'Shift 3'].forEach(function(key) {
+          const s = shiftMap[key];
+          s.ach = s.planning > 0 ? Number(((s.aktual / s.planning) * 100).toFixed(1)) : 0;
+          totalPlan += s.planning;
+          totalAkt += s.aktual;
+          totalDowntime += s.downtimeMenit;
+          totalWaste += (s.wasteBersihLokal + s.wasteBersihEkspor + s.wasteKotorLokal + s.wasteKotorEkspor);
+        });
+
+        Dashboard.renderSummary({
+          tanggal: tgl,
+          totalPlanning: totalPlan,
+          totalAktual: totalAkt,
+          totalAch: totalPlan > 0 ? Number(((totalAkt / totalPlan) * 100).toFixed(1)) : 0,
+          totalDowntimeMenit: totalDowntime,
+          totalDowntimePersen: Number(((totalDowntime / (480 * 3)) * 100).toFixed(1)),
+          totalWasteKg: Number(totalWaste.toFixed(2)),
+          shifts: [shiftMap['Shift 1'], shiftMap['Shift 2'], shiftMap['Shift 3']]
+        });
+      },
+
+      renderSummary: function(dash) {
+        if (!dash) return;
+        document.getElementById('dashDateLabel').textContent = 'Tanggal: ' + dash.tanggal;
+        document.getElementById('kpiTotalPlan').textContent = Utils.formatNumber(dash.totalPlanning);
+        document.getElementById('kpiTotalAkt').textContent = Utils.formatNumber(dash.totalAktual);
+        document.getElementById('kpiTotalAch').textContent = dash.totalAch + '%';
+        document.getElementById('kpiTotalDt').textContent = Utils.formatNumber(dash.totalDowntimeMenit) + ' mnt (' + dash.totalDowntimePersen + '%)';
+        document.getElementById('kpiTotalWaste').textContent = 'Total Waste: ' + Utils.formatNumber(dash.totalWasteKg) + ' kg';
+
+        const container = document.getElementById('shiftSummaryGrid');
+        container.innerHTML = '';
+
+        (dash.shifts || []).forEach(function(s) {
+          const card = document.createElement('div');
+          card.className = 'shift-card';
+
+          const statusClass = s.reported ? 'status-ok' : 'status-wait';
+          const statusText = s.reported ? 'Sudah Lapor' : 'Belum Ada Data';
+          const totalShiftWaste = (s.wasteBersihLokal || 0) + (s.wasteBersihEkspor || 0) + (s.wasteKotorLokal || 0) + (s.wasteKotorEkspor || 0);
+
+          let skuHtml = '';
+          if (s.items && s.items.length > 0) {
+            skuHtml = '<div class="mini-sku-list"><strong>Detail SKU:</strong>';
+            s.items.forEach(function(it) {
+              skuHtml += '<div class="mini-sku-item"><span>' + Utils.escapeHtml(it.sku) + '</span><span>' + Utils.formatNumber(it.aktual) + '/' + Utils.formatNumber(it.planning) + ' (' + it.ach + '%)</span></div>';
+            });
+            skuHtml += '</div>';
+          }
+
+          card.innerHTML =
+            '<div class="shift-card-head">' +
+              '<strong style="font-size:15px;">' + Utils.escapeHtml(s.shift) + '</strong>' +
+              '<span class="status-pill ' + statusClass + '">' + statusText + '</span>' +
+            '</div>' +
+            '<div class="shift-stat-row"><span>Pelapor:</span><strong>' + Utils.escapeHtml(s.pelapor) + '</strong></div>' +
+            '<div class="shift-stat-row"><span>Planning / Aktual:</span><strong>' + Utils.formatNumber(s.planning) + ' / ' + Utils.formatNumber(s.aktual) + '</strong></div>' +
+            '<div class="shift-stat-row"><span>Achievement:</span><strong style="color:var(--primary);">' + s.ach + '%</strong></div>' +
+            '<div class="shift-stat-row"><span>Downtime:</span><span>' + Utils.formatNumber(s.downtimeMenit) + ' mnt (' + s.downtimePersen + '%)</span></div>' +
+            '<div class="shift-stat-row"><span>Total Waste:</span><span>' + Utils.formatNumber(totalShiftWaste) + ' kg</span></div>' +
+            '<div class="shift-stat-row" style="flex-direction:column; gap:2px; margin-top:4px;">' +
+              '<span style="color:var(--text-muted);">Kendala:</span>' +
+              '<span style="font-size:12px; color:#334155;">' + Utils.escapeHtml(s.kendala) + '</span>' +
+            '</div>' +
+            skuHtml;
+
+          container.appendChild(card);
+        });
+      }
+    };
+
+    /* ==========================================================================
+       MENU 2: FORM INPUT LAPORAN SHIFT (LHP)
+       ========================================================================== */
+    const LhpForm = {
+      getDraftKey: function() {
+        const tgl = document.getElementById('lhpTanggal').value || 'no_date';
+        const shf = document.getElementById('lhpShift').value || 'Shift 1';
+        return 'lhp_sb_draft_' + tgl + '_' + shf;
+      },
+
+      setBadge: function(text, bg, color, border) {
+        const badge = document.getElementById('formStatusBadge');
+        badge.textContent = text;
+        badge.style.background = bg;
+        badge.style.color = color;
+        badge.style.borderColor = border;
+      },
+
+      loadForDateAndShift: async function() {
+        const tgl = document.getElementById('lhpTanggal').value;
+        const shf = document.getElementById('lhpShift').value;
+        if (!tgl || !shf) return;
+
+        const draftRaw = Storage.getLocal(LhpForm.getDraftKey());
+        if (draftRaw) {
+          try {
+            const parsed = JSON.parse(draftRaw);
+            LhpForm.populate(parsed);
+            LhpForm.setBadge('Draft Lokal Dipulihkan (' + tgl + ' - ' + shf + ')', '#fefce8', '#854d0e', '#fef08a');
+            return;
+          } catch (e) {}
+        }
+
+        if (!sb) {
+          LhpForm.buildDefault();
+          return;
+        }
+
+        AppState.isLoadingServer = true;
+        LhpForm.setBadge('Memeriksa data di Supabase...', '#eff6ff', '#1e40af', '#bfdbfe');
+
+        try {
+          const { data, error } = await sb
+            .from('app_lhp_log')
+            .select('*')
+            .eq('tanggal_produksi', tgl)
+            .eq('shift', shf)
+            .order('id', { ascending: true });
+
+          AppState.isLoadingServer = false;
+
+          if (!error && data && data.length > 0) {
+            const first = data[0];
+            const skus = data.map(function(r) {
+              return { sku: r.sku, kodeEo: r.kode_eo || '', planning: r.planning, aktual: r.aktual };
+            });
+
+            const dtRaw = String(first.detail_downtime || '').trim();
+            const dtList = [];
+            if (dtRaw && dtRaw !== '-') {
+              dtRaw.split(' | ').forEach(function(item) {
+                const segs = item.split(' :: ');
+                dtList.push({ waktu: segs[0] || '', keterangan: segs[1] || '', menit: parseFloat(segs[2]) || 0 });
+              });
+            }
+
+            const kendalaRaw = String(first.kendala || '').trim();
+            const kendalaList = [];
+            if (kendalaRaw && kendalaRaw !== '-') {
+              kendalaRaw.split(' | ').forEach(function(item) {
+                const mainSegs = item.split(' :: ');
+                const mSplit = (mainSegs[0] || '').split(' : ');
+                const wSplit = mSplit.slice(1).join(' : ').split(' - ');
+                kendalaList.push({
+                  mesin: mSplit[0] || '',
+                  why1: wSplit[0] || '',
+                  why2: wSplit.slice(1).join(' - ') || '',
+                  waktu: mainSegs[1] || '',
+                  keterangan: mainSegs[2] || ''
+                });
+              });
+            }
+
+            const formatted = {
+              waktuInput: first.waktu_input,
+              pelapor: first.pelapor,
+              skus: skus,
+              wipAwal: first.wip_awal_kg,
+              wipAkhir: first.wip_akhir_kg,
+              wasteBersihLokal: first.waste_bersih_lokal_kg,
+              wasteBersihEkspor: first.waste_bersih_ekspor_kg,
+              wasteKotorLokal: first.waste_kotor_lokal_kg,
+              wasteKotorEkspor: first.waste_kotor_ekspor_kg,
+              downtimeList: dtList,
+              kendala: kendalaList
+            };
+
+            LhpForm.populate(formatted);
+            LhpForm.saveDraft();
+            LhpForm.setBadge('Data Tersimpan Dimuat (Update: ' + first.waktu_input + ')', '#dcfce7', '#166534', '#bbf7d0');
+            Utils.showToast('Data ' + shf + ' tanggal ' + tgl + ' dimuat');
+          } else {
+            LhpForm.buildDefault();
+            LhpForm.setBadge('Form Baru (' + tgl + ' - ' + shf + ')', '#f1f5f9', '#334155', '#cbd5e1');
+          }
+        } catch (err) {
+          AppState.isLoadingServer = false;
+          LhpForm.buildDefault();
+          LhpForm.setBadge('Form Baru (' + tgl + ' - ' + shf + ')', '#f1f5f9', '#334155', '#cbd5e1');
+        }
+      },
+
+      buildDefault: function() {
+        const tbody = document.getElementById('skuTableBody');
+        tbody.innerHTML = '';
+        for (let i = 0; i < 6; i++) LhpForm.addSkuRow('', '', '', '', true);
+
+        ['wipAwal', 'wipAkhir', 'wasteBersihLokal', 'wasteBersihEkspor', 'wasteKotorLokal', 'wasteKotorEkspor'].forEach(function(id) {
+          document.getElementById(id).value = '';
+        });
+
+        const dtContainer = document.getElementById('dtContainer');
+        dtContainer.innerHTML = '';
+        LhpForm.addDtRow('', '', '', true);
+        LhpForm.recalculateDowntime();
+
+        const kContainer = document.getElementById('kendalaContainer');
+        kContainer.innerHTML = '';
+        LhpForm.addKendalaRow('', '', '', '', '', true);
+
+        LhpForm.recalculateSku();
+      },
+
+      populate: function(data) {
+        const tbody = document.getElementById('skuTableBody');
+        tbody.innerHTML = '';
+        const skus = data.skus || [];
+        const rowCount = Math.max(6, skus.length);
+        for (let i = 0; i < rowCount; i++) {
+          const item = skus[i] || {};
+          LhpForm.addSkuRow(
+            item.sku || '',
+            item.kodeEo || '',
+            item.planning !== undefined && item.planning !== '' ? item.planning : '',
+            item.aktual !== undefined && item.aktual !== '' ? item.aktual : '',
+            true
+          );
+        }
+
+        document.getElementById('wipAwal').value = data.wipAwal !== undefined ? data.wipAwal : '';
+        document.getElementById('wipAkhir').value = data.wipAkhir !== undefined ? data.wipAkhir : '';
+        document.getElementById('wasteBersihLokal').value = data.wasteBersihLokal !== undefined ? data.wasteBersihLokal : '';
+        document.getElementById('wasteBersihEkspor').value = data.wasteBersihEkspor !== undefined ? data.wasteBersihEkspor : '';
+        document.getElementById('wasteKotorLokal').value = data.wasteKotorLokal !== undefined ? data.wasteKotorLokal : '';
+        document.getElementById('wasteKotorEkspor').value = data.wasteKotorEkspor !== undefined ? data.wasteKotorEkspor : '';
+
+        const dtContainer = document.getElementById('dtContainer');
+        dtContainer.innerHTML = '';
+        const dtList = data.downtimeList || [];
+        if (dtList.length === 0) LhpForm.addDtRow('', '', '', true);
+        else dtList.forEach(function(d) { LhpForm.addDtRow(d.waktu || '', d.keterangan || '', d.menit !== undefined ? d.menit : '', true); });
+        LhpForm.recalculateDowntime();
+
+        const kContainer = document.getElementById('kendalaContainer');
+        kContainer.innerHTML = '';
+        const kList = data.kendala || [];
+        if (kList.length === 0) LhpForm.addKendalaRow('', '', '', '', '', true);
+        else kList.forEach(function(k) { LhpForm.addKendalaRow(k.mesin || '', k.why1 || '', k.why2 || '', k.waktu || '', k.keterangan || '', true); });
+
+        LhpForm.recalculateSku();
+      },
+
+      addSkuRow: function(skuVal, eoVal, planVal, aktVal, skipSave) {
+        const tbody = document.getElementById('skuTableBody');
+        const tr = document.createElement('tr');
+        tr.innerHTML =
+          '<td><input type="text" class="table-input sku-name" placeholder="Contoh: MCR 21gr" value="' + Utils.escapeAttr(skuVal || '') + '" /></td>' +
+          '<td><input type="text" class="table-input sku-eo" placeholder="Kode EO" value="' + Utils.escapeAttr(eoVal || '') + '" /></td>' +
+          '<td><input type="number" step="any" min="0" class="table-input sku-plan" placeholder="0" value="' + Utils.escapeAttr(planVal !== undefined ? planVal : '') + '" /></td>' +
+          '<td><input type="number" step="any" min="0" class="table-input sku-akt" placeholder="0" value="' + Utils.escapeAttr(aktVal !== undefined ? aktVal : '') + '" /></td>' +
+          '<td class="ach-cell sku-ach">0.0%</td>';
+
+        tr.querySelectorAll('input').forEach(function(inp) {
+          inp.addEventListener('input', function() {
+            LhpForm.recalculateSku();
+            LhpForm.saveDraft();
+          });
+        });
+
+        tbody.appendChild(tr);
+        LhpForm.recalculateSku();
+        if (!skipSave) LhpForm.saveDraft();
+      },
+
+      recalculateSku: function() {
+        const rows = document.querySelectorAll('#skuTableBody tr');
+        let sumPlan = 0, sumAkt = 0;
+
+        rows.forEach(function(row) {
+          const plan = parseFloat(row.querySelector('.sku-plan').value) || 0;
+          const akt = parseFloat(row.querySelector('.sku-akt').value) || 0;
+          const achCell = row.querySelector('.sku-ach');
+          const rowAch = plan > 0 ? ((akt / plan) * 100) : 0;
+          achCell.textContent = rowAch.toFixed(1) + '%';
+          sumPlan += plan;
+          sumAkt += akt;
+        });
+
+        const totalAch = sumPlan > 0 ? ((sumAkt / sumPlan) * 100) : 0;
+        document.getElementById('totalPlanningCell').textContent = Utils.formatNumber(sumPlan);
+        document.getElementById('totalAktualCell').textContent = Utils.formatNumber(sumAkt);
+        document.getElementById('totalAchCell').textContent = totalAch.toFixed(1) + '%';
+      },
+
+      addDtRow: function(waktuVal, ketVal, menitVal, skipSave) {
+        const container = document.getElementById('dtContainer');
+        const div = document.createElement('div');
+        div.className = 'dt-row';
+        div.innerHTML =
+          '<input type="text" class="form-control dt-waktu" placeholder="Waktu (cth: 10:36-11.25)" value="' + Utils.escapeAttr(waktuVal || '') + '" />' +
+          '<input type="text" class="form-control dt-ket" placeholder="Keterangan downtime (cth: cooling mati)" value="' + Utils.escapeAttr(ketVal || '') + '" />' +
+          '<input type="number" step="any" min="0" class="form-control dt-menit" placeholder="Menit" value="' + Utils.escapeAttr(menitVal !== undefined ? menitVal : '') + '" />' +
+          '<button type="button" class="btn btn-danger-soft btn-del-dt">Hapus</button>';
+
+        const waktuInput = div.querySelector('.dt-waktu');
+        const ketInput = div.querySelector('.dt-ket');
+        const menitInput = div.querySelector('.dt-menit');
+
+        waktuInput.addEventListener('input', function() {
+          const autoMin = Utils.calcMinutesFromRange(waktuInput.value);
+          if (autoMin !== null) menitInput.value = autoMin;
+          LhpForm.recalculateDowntime();
+          LhpForm.saveDraft();
+        });
+
+        ketInput.addEventListener('input', LhpForm.saveDraft);
+        menitInput.addEventListener('input', function() {
+          LhpForm.recalculateDowntime();
+          LhpForm.saveDraft();
+        });
+
+        div.querySelector('.btn-del-dt').addEventListener('click', function() {
+          div.remove();
+          if (container.children.length === 0) LhpForm.addDtRow('', '', '', true);
+          LhpForm.recalculateDowntime();
+          LhpForm.saveDraft();
+        });
+
+        container.appendChild(div);
+        LhpForm.recalculateDowntime();
+        if (!skipSave) LhpForm.saveDraft();
+      },
+
+      recalculateDowntime: function() {
+        let totalMenit = 0;
+        document.querySelectorAll('#dtContainer .dt-menit').forEach(function(inp) {
+          totalMenit += parseFloat(inp.value) || 0;
+        });
+        const persen = (totalMenit / 480) * 100;
+        document.getElementById('dtTotalMenitText').textContent = Utils.formatNumber(totalMenit) + ' Menit';
+        document.getElementById('downtimePersenText').textContent = persen.toFixed(2) + '%';
+      },
+
+      addKendalaRow: function(mesinVal, why1Val, why2Val, waktuVal, ketVal, skipSave) {
+        const container = document.getElementById('kendalaContainer');
+        const div = document.createElement('div');
+        div.className = 'kendala-row';
+        div.innerHTML =
+          '<input type="text" class="form-control k-mesin" placeholder="Mesin (cth: Mesin H0)" value="' + Utils.escapeAttr(mesinVal || '') + '" />' +
+          '<input type="text" class="form-control k-why1" placeholder="Why 1" value="' + Utils.escapeAttr(why1Val || '') + '" />' +
+          '<input type="text" class="form-control k-why2" placeholder="Why 2" value="' + Utils.escapeAttr(why2Val || '') + '" />' +
+          '<input type="text" class="form-control k-waktu" placeholder="Waktu (07.00-07.32)" value="' + Utils.escapeAttr(waktuVal || '') + '" />' +
+          '<input type="text" class="form-control k-ket" placeholder="Ket (cth: SPK2)" value="' + Utils.escapeAttr(ketVal || '') + '" />' +
+          '<button type="button" class="btn btn-danger-soft btn-del-kendala">Hapus</button>';
+
+        div.querySelectorAll('input').forEach(function(inp) {
+          inp.addEventListener('input', LhpForm.saveDraft);
+        });
+
+        div.querySelector('.btn-del-kendala').addEventListener('click', function() {
+          div.remove();
+          if (container.children.length === 0) LhpForm.addKendalaRow('', '', '', '', '', true);
+          LhpForm.saveDraft();
+        });
+
+        container.appendChild(div);
+        if (!skipSave) LhpForm.saveDraft();
+      },
+
+      collectData: function() {
+        const skus = [];
+        document.querySelectorAll('#skuTableBody tr').forEach(function(row) {
+          skus.push({
+            sku: row.querySelector('.sku-name').value,
+            kodeEo: row.querySelector('.sku-eo').value,
+            planning: row.querySelector('.sku-plan').value,
+            aktual: row.querySelector('.sku-akt').value
+          });
+        });
+
+        const downtimeList = [];
+        document.querySelectorAll('#dtContainer .dt-row').forEach(function(row) {
+          downtimeList.push({
+            waktu: row.querySelector('.dt-waktu').value,
+            keterangan: row.querySelector('.dt-ket').value,
+            menit: row.querySelector('.dt-menit').value
+          });
+        });
+
+        const kendala = [];
+        document.querySelectorAll('#kendalaContainer .kendala-row').forEach(function(row) {
+          kendala.push({
+            mesin: row.querySelector('.k-mesin').value,
+            why1: row.querySelector('.k-why1').value,
+            why2: row.querySelector('.k-why2').value,
+            waktu: row.querySelector('.k-waktu').value,
+            keterangan: row.querySelector('.k-ket').value
+          });
+        });
+
+        return {
+          tanggal: document.getElementById('lhpTanggal').value,
+          shift: document.getElementById('lhpShift').value,
+          pelapor: document.getElementById('lhpPelapor').value,
+          skus: skus,
+          wipAwal: document.getElementById('wipAwal').value,
+          wipAkhir: document.getElementById('wipAkhir').value,
+          wasteBersihLokal: document.getElementById('wasteBersihLokal').value,
+          wasteBersihEkspor: document.getElementById('wasteBersihEkspor').value,
+          wasteKotorLokal: document.getElementById('wasteKotorLokal').value,
+          wasteKotorEkspor: document.getElementById('wasteKotorEkspor').value,
+          downtimeList: downtimeList,
+          kendala: kendala
+        };
+      },
+
+      saveDraft: function() {
+        if (AppState.isLoadingServer) return;
+        const data = LhpForm.collectData();
+        Storage.setLocal(LhpForm.getDraftKey(), JSON.stringify(data));
+        LhpForm.setBadge('Auto-Draft Tersimpan Lokal', '#fefce8', '#854d0e', '#fef08a');
+      },
+
+      resetBlank: function() {
+        Storage.removeLocal(LhpForm.getDraftKey());
+        LhpForm.buildDefault();
+        LhpForm.setBadge('Form Dibersihkan', '#f1f5f9', '#334155', '#cbd5e1');
+        Utils.showToast('Isian form LHP dibersihkan');
+      },
+
+      buildWhatsAppSummary: function(data) {
+        const lines = [];
+        lines.push('*HASIL PRODUKSI*');
+        lines.push('*' + Utils.formatIndoDateFull(data.tanggal) + '*');
+        lines.push('*' + (data.shift || '-') + '*');
+        lines.push('');
+
+        const validSkus = (data.skus || []).filter(function(s) {
+          return String(s.sku || '').trim() !== '';
+        });
+
+        validSkus.forEach(function(s) {
+          const skuName = String(s.sku).trim();
+          const eoCode = String(s.kodeEo || '').trim();
+          const fullTitle = eoCode ? (skuName + ' ' + eoCode) : skuName;
+          const flag = Utils.detectFlag(fullTitle);
+
+          const plan = parseFloat(s.planning) || 0;
+          const akt = parseFloat(s.aktual) || 0;
+          const achVal = plan > 0 ? ((akt / plan) * 100) : 0;
+          const achFormatted = Number.isInteger(achVal)
+            ? achVal.toFixed(0) + '%'
+            : achVal.toFixed(2).replace('.', ',') + '%';
+
+          lines.push('*' + fullTitle + flag + '*');
+          lines.push('Planning : ' + plan + ' ©️');
+          lines.push('Hasil      : ' + akt + ' ©️');
+          lines.push('Acv        : *' + achFormatted + '*');
+          lines.push('');
+        });
+
+        lines.push('Note :');
+        const validKendala = (data.kendala || []).filter(function(k) {
+          return String(k.mesin || '').trim() !== '' ||
+                 String(k.why1 || '').trim() !== '' ||
+                 String(k.why2 || '').trim() !== '' ||
+                 String(k.waktu || '').trim() !== '' ||
+                 String(k.keterangan || '').trim() !== '';
+        });
+
+        if (validKendala.length === 0) {
+          lines.push('- Nihil');
+        } else {
+          validKendala.forEach(function(k) {
+            const m = String(k.mesin || '').trim();
+            const w1 = String(k.why1 || '').trim();
+            const w2 = String(k.why2 || '').trim();
+            const wkt = String(k.waktu || '').trim();
+            const ket = String(k.keterangan || '').trim();
+
+            const whyCombined = (w1 && w2) ? (w1 + ' - ' + w2) : (w1 || w2);
+            let itemText = '';
+            if (m && whyCombined) itemText = m + ' : ' + whyCombined;
+            else itemText = m || whyCombined;
+
+            if (wkt) itemText += ' (' + wkt + ')';
+            if (ket) itemText += ' ' + ket;
+            lines.push('- ' + itemText.trim());
+          });
+        }
+        lines.push('');
+
+        lines.push('DT :');
+        const validDt = (data.downtimeList || []).filter(function(d) {
+          return String(d.waktu || '').trim() !== '' ||
+                 String(d.keterangan || '').trim() !== '' ||
+                 (parseFloat(d.menit) || 0) > 0;
+        });
+
+        if (validDt.length === 0) {
+          lines.push('- Nihil');
+        } else {
+          validDt.forEach(function(d) {
+            const wkt = String(d.waktu || '').trim();
+            const ket = String(d.keterangan || '').trim();
+            const mnt = parseFloat(d.menit) || 0;
+
+            let dtText = '';
+            if (wkt && ket) dtText = wkt + ' ' + ket;
+            else dtText = wkt || ket;
+
+            if (mnt > 0) dtText += ' (' + mnt + ' mnt)';
+            lines.push('- ' + dtText.trim());
+          });
+        }
+        lines.push('');
+
+        lines.push('Waste :');
+        lines.push('- Lokal bersih : ' + (parseFloat(data.wasteBersihLokal) || 0) + 'kg');
+        lines.push('- Exp bersih : ' + (parseFloat(data.wasteBersihEkspor) || 0) + 'kg');
+        lines.push('- Lokal kotor : ' + (parseFloat(data.wasteKotorLokal) || 0) + 'kg');
+        lines.push('- Exp kotor : ' + (parseFloat(data.wasteKotorEkspor) || 0) + 'kg');
+
+        return lines.join('\n');
+      },
+
+      openSummaryModal: function(data) {
+        const text = LhpForm.buildWhatsAppSummary(data || LhpForm.collectData());
+        document.getElementById('summaryOutputText').value = text;
+        document.getElementById('summaryModal').classList.remove('hidden');
+      },
+
+      closeSummaryModal: function() {
+        document.getElementById('summaryModal').classList.add('hidden');
+      },
+
+      copySummaryText: function() {
+        const textarea = document.getElementById('summaryOutputText');
+        textarea.select();
+        textarea.setSelectionRange(0, 99999);
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(textarea.value);
+          else document.execCommand('copy');
+          Utils.showToast('Summary berhasil disalin! Siap ditempel di WhatsApp.');
+        } catch (e) {
+          document.execCommand('copy');
+          Utils.showToast('Summary berhasil disalin!');
+        }
+      },
+
+      submitToCloud: async function() {
+        if (!sb) {
+          Utils.showToast('Konfigurasi Supabase belum diisi!');
+          return;
+        }
+        const payload = LhpForm.collectData();
+
+        if (!payload.tanggal) {
+          Utils.showToast('Tanggal Produksi wajib diisi!');
+          return;
+        }
+
+        const validSkus = payload.skus.filter(function(s) {
+          return String(s.sku || '').trim() !== '';
+        });
+        if (validSkus.length === 0) {
+          Utils.showToast('Minimal isi 1 baris nama SKU sebelum menyimpan!');
+          return;
+        }
+
+        const btn = document.getElementById('btnSaveLhp');
+        btn.disabled = true;
+        btn.textContent = 'Menyimpan ke Cloud...';
+
+        try {
+          const waktuInput = Utils.getNowWIB();
+          const wipAwal = parseFloat(payload.wipAwal) || 0;
+          const wipAkhir = parseFloat(payload.wipAkhir) || 0;
+          const wasteBersihLokal = parseFloat(payload.wasteBersihLokal) || 0;
+          const wasteBersihEkspor = parseFloat(payload.wasteBersihEkspor) || 0;
+          const wasteKotorLokal = parseFloat(payload.wasteKotorLokal) || 0;
+          const wasteKotorEkspor = parseFloat(payload.wasteKotorEkspor) || 0;
+
+          const validDt = (payload.downtimeList || []).filter(function(d) {
+            return String(d.waktu || '').trim() !== '' ||
+                   String(d.keterangan || '').trim() !== '' ||
+                   (parseFloat(d.menit) || 0) > 0;
+          });
+
+          let totalDowntimeMenit = 0;
+          const dtFormatted = validDt.map(function(d) {
+            const m = parseFloat(d.menit) || 0;
+            totalDowntimeMenit += m;
+            return [String(d.waktu || '-').trim(), String(d.keterangan || '-').trim(), m].join(' :: ');
+          }).join(' | ') || '-';
+
+          const downtimePersen = Number(((totalDowntimeMenit / 480) * 100).toFixed(2));
+
+          const validKendala = (payload.kendala || []).filter(function(k) {
+            return String(k.mesin || '').trim() !== '' ||
+                   String(k.why1 || '').trim() !== '' ||
+                   String(k.why2 || '').trim() !== '' ||
+                   String(k.waktu || '').trim() !== '' ||
+                   String(k.keterangan || '').trim() !== '';
+          });
+
+          const kendalaFormatted = validKendala.map(function(k) {
+            const mesin = String(k.mesin || '-').trim();
+            const w1 = String(k.why1 || '').trim();
+            const w2 = String(k.why2 || '').trim();
+            const whyStr = (w1 && w2) ? (w1 + ' - ' + w2) : (w1 || w2 || '-');
+            return [mesin + ' : ' + whyStr, String(k.waktu || '').trim(), String(k.keterangan || '').trim()].join(' :: ');
+          }).join(' | ') || '-';
+
+          const rowsToInsert = validSkus.map(function(item) {
+            const plan = parseFloat(item.planning) || 0;
+            const akt = parseFloat(item.aktual) || 0;
+            const ach = plan > 0 ? Number(((akt / plan) * 100).toFixed(2)) : 0;
+
+            return {
+              waktu_input: waktuInput,
+              tanggal_produksi: payload.tanggal,
+              shift: payload.shift,
+              pelapor: payload.pelapor,
+              sku: String(item.sku).trim(),
+              kode_eo: String(item.kodeEo || '').trim(),
+              planning: plan,
+              aktual: akt,
+              ach_persen: ach,
+              wip_awal_kg: wipAwal,
+              wip_akhir_kg: wipAkhir,
+              waste_bersih_lokal_kg: wasteBersihLokal,
+              waste_bersih_ekspor_kg: wasteBersihEkspor,
+              waste_kotor_lokal_kg: wasteKotorLokal,
+              waste_kotor_ekspor_kg: wasteKotorEkspor,
+              total_downtime_menit: totalDowntimeMenit,
+              downtime_persen: downtimePersen,
+              detail_downtime: dtFormatted,
+              kendala: kendalaFormatted
+            };
+          });
+
+          const { error: delErr } = await sb
+            .from('app_lhp_log')
+            .delete()
+            .eq('tanggal_produksi', payload.tanggal)
+            .eq('shift', payload.shift);
+          if (delErr) throw delErr;
+
+          const { error: insErr } = await sb.from('app_lhp_log').insert(rowsToInsert);
+          if (insErr) throw insErr;
+
+          Storage.setLocal(LhpForm.getDraftKey(), JSON.stringify(payload));
+          LhpForm.setBadge('Tersimpan di Cloud (' + waktuInput + ')', '#dcfce7', '#166534', '#bbf7d0');
+          Utils.showToast('Laporan ' + payload.shift + ' (' + payload.tanggal + ') berhasil disimpan!', 4000);
+          document.getElementById('dashDateFilter').value = payload.tanggal;
+          Dashboard.loadByDate();
+          LhpForm.openSummaryModal(payload);
+        } catch (err) {
+          Utils.showToast('Gagal menyimpan laporan: ' + err.message, 4000);
+        } finally {
+          btn.disabled = false;
+          btn.textContent = 'Simpan Laporan ke Cloud';
+        }
+      }
+    };
+
+    /* ==========================================================================
+       MENU 3: KONTROL DOKUMEN EKSPOR (WEEKLY ALL-SHIFT + SUPABASE STORAGE)
+       ========================================================================== */
+    const EksporForm = {
+      initSelectors: function() {
+        const yearSel = document.getElementById('eksporTahun');
+        const weekSel = document.getElementById('eksporWeek');
+        if (yearSel.options.length === 0) {
+          const baseYear = AppState.currentYear || 2026;
+          for (let y = baseYear - 1; y <= baseYear + 2; y++) {
+            const opt = document.createElement('option');
+            opt.value = String(y);
+            opt.textContent = String(y);
+            if (y === baseYear) opt.selected = true;
+            yearSel.appendChild(opt);
+          }
+        }
+        if (weekSel.options.length === 0) {
+          const curWeek = AppState.currentWeek || 47;
+          for (let w = 1; w <= 53; w++) {
+            const opt = document.createElement('option');
+            opt.value = String(w);
+            opt.textContent = 'Week ' + w;
+            if (w === curWeek) opt.selected = true;
+            weekSel.appendChild(opt);
+          }
+        }
+        EksporForm.updatePeriodLabel();
+      },
+
+      updatePeriodLabel: function() {
+        const y = document.getElementById('eksporTahun').value;
+        const w = document.getElementById('eksporWeek').value;
+        document.getElementById('eksporPeriodLabel').textContent = 'Tahun ' + y + ' — Week ' + w + ' (All Shift)';
+      },
+
+      getDraftKey: function() {
+        const y = document.getElementById('eksporTahun').value || '2026';
+        const w = document.getElementById('eksporWeek').value || '47';
+        return 'ekspor_sb_weekly_' + y + '_W' + w;
+      },
+
+      setBadge: function(text, bg, color, border) {
+        const badge = document.getElementById('eksporStatusBadge');
+        badge.textContent = text;
+        badge.style.background = bg;
+        badge.style.color = color;
+        badge.style.borderColor = border;
+      },
+
+      openIkZoom: function(imgUrl, skuLabel) {
+        if (!imgUrl) return;
+        const y = document.getElementById('eksporTahun').value;
+        const w = document.getElementById('eksporWeek').value;
+        const titleSku = skuLabel ? (' — ' + skuLabel) : '';
+        document.getElementById('ikZoomTitle').textContent = 'Foto IK Ekspor (Tahun ' + y + ' W' + w + ')' + titleSku;
+        document.getElementById('ikZoomFullImg').src = imgUrl;
+        document.getElementById('ikZoomModal').classList.remove('hidden');
+      },
+
+      loadForYearAndWeek: async function(forceServer) {
+        EksporForm.updatePeriodLabel();
+        const tahun = document.getElementById('eksporTahun').value;
+        const week = document.getElementById('eksporWeek').value;
+        if (!tahun || !week) return;
+
+        if (!forceServer) {
+          const draftRaw = Storage.getLocal(EksporForm.getDraftKey());
+          if (draftRaw) {
+            try {
+              const parsed = JSON.parse(draftRaw);
+              EksporForm.populate(parsed);
+              EksporForm.setBadge('Draft Lokal W' + week + ' Dipulihkan', '#fefce8', '#854d0e', '#fef08a');
+              return;
+            } catch (e) {}
+          }
+        }
+
+        if (!sb) {
+          EksporForm.buildDefault();
+          return;
+        }
+
+        AppState.isLoadingEkspor = true;
+        EksporForm.setBadge('Memuat data Week ' + week + '...', '#eff6ff', '#1e40af', '#bfdbfe');
+
+        try {
+          const { data, error } = await sb
+            .from('app_ekspor_log')
+            .select('*')
+            .eq('tahun', tahun)
+            .eq('week', week)
+            .order('id', { ascending: true });
+
+          AppState.isLoadingEkspor = false;
+
+          if (!error && data && data.length > 0) {
+            const first = data[0];
+            const items = data.map(function(r) {
+              return {
+                sku: r.nama_sku || '',
+                ikImage: r.ik_image_url || '',
+                nomorEo: r.nomor_eo || '',
+                kodefikasi1: r.kodefikasi_1 || '',
+                kodefikasi2: r.kodefikasi_2 || '',
+                qty: r.qty_target !== null ? r.qty_target : '',
+                kekurangan: r.kekurangan !== null ? r.kekurangan : '',
+                statusKet: r.status_keterangan || 'belum verif',
+                note: r.note || ''
+              };
+            });
+
+            EksporForm.populate({ items: items });
+            if (first.updated_by) document.getElementById('eksporPelapor').value = first.updated_by;
+            EksporForm.saveDraft();
+            EksporForm.setBadge('Data W' + week + ' Dimuat (Update: ' + first.waktu_input + ')', '#dcfce7', '#166534', '#bbf7d0');
+          } else {
+            EksporForm.buildDefault();
+            EksporForm.setBadge('Form Baru Tahun ' + tahun + ' - Week ' + week, '#f1f5f9', '#334155', '#cbd5e1');
+          }
+        } catch (err) {
+          AppState.isLoadingEkspor = false;
+          EksporForm.buildDefault();
+          EksporForm.setBadge('Form Baru Tahun ' + tahun + ' - Week ' + week, '#f1f5f9', '#334155', '#cbd5e1');
+        }
+      },
+
+      buildDefault: function() {
+        const tbody = document.getElementById('eksporTableBody');
+        tbody.innerHTML = '';
+        for (let i = 0; i < 8; i++) {
+          EksporForm.addRow('', '', '', '', '', '', '', 'belum verif', '', true);
+        }
+        EksporForm.refreshIndicesAndStats();
+      },
+
+      populate: function(data) {
+        const tbody = document.getElementById('eksporTableBody');
+        tbody.innerHTML = '';
+        const items = data.items || [];
+        const rowCount = Math.max(8, items.length);
+        for (let i = 0; i < rowCount; i++) {
+          const it = items[i] || {};
+          EksporForm.addRow(
+            it.sku || '',
+            it.ikImage || '',
+            it.nomorEo || '',
+            it.kodefikasi1 || '',
+            it.kodefikasi2 || '',
+            it.qty !== undefined && it.qty !== '' ? it.qty : '',
+            it.kekurangan !== undefined && it.kekurangan !== '' ? it.kekurangan : '',
+            it.statusKet || 'belum verif',
+            it.note || '',
+            true
+          );
+        }
+        EksporForm.refreshIndicesAndStats();
+      },
+
+      addRow: function(skuVal, ikImageVal, eoVal, kode1Val, kode2Val, qtyVal, kurangVal, statusVal, noteVal, skipSave) {
+        const tbody = document.getElementById('eksporTableBody');
+        const tr = document.createElement('tr');
+        const isYes = String(statusVal || '').toLowerCase() === 'sudah verif';
+        const isViewer = AppState.user && AppState.user.role === 'VIEWER';
+
+        tr.dataset.ikImage = ikImageVal || '';
+
+        tr.innerHTML =
+          '<td class="row-num" style="text-align: center; font-weight: 700; color: #475569;">1</td>' +
+          '<td><input type="text" class="table-input eks-sku" placeholder="Nama SKU" value="' + Utils.escapeAttr(skuVal || '') + '" ' + (isViewer ? 'readonly' : '') + ' /></td>' +
+          '<td>' +
+            '<div class="row-ik-cell">' +
+              '<input type="file" accept="image/*" class="eks-ik-file hidden" />' +
+              '<img class="row-ik-thumb ' + (ikImageVal ? '' : 'hidden') + '" src="' + Utils.escapeAttr(ikImageVal || '') + '" alt="IK" title="Klik untuk memperbesar Foto IK" />' +
+              (!isViewer
+                ? '<button type="button" class="btn ' + (ikImageVal ? 'btn-outline' : 'btn-primary') + ' btn-xs btn-upload-row-ik">' + (ikImageVal ? 'Ganti' : '+ Foto IK') + '</button>'
+                : (!ikImageVal ? '<span style="font-size:11px; color:#64748b;">-</span>' : '')
+              ) +
+            '</div>' +
+          '</td>' +
+          '<td><input type="text" class="table-input eks-eo" placeholder="Nomor EO" value="' + Utils.escapeAttr(eoVal || '') + '" ' + (isViewer ? 'readonly' : '') + ' /></td>' +
+          '<td>' +
+            '<div class="kodefikasi-stack">' +
+              '<input type="text" class="table-input eks-kode1" placeholder="Baris 1" value="' + Utils.escapeAttr(kode1Val || '') + '" ' + (isViewer ? 'readonly' : '') + ' />' +
+              '<input type="text" class="table-input eks-kode2" placeholder="Baris 2" value="' + Utils.escapeAttr(kode2Val || '') + '" ' + (isViewer ? 'readonly' : '') + ' />' +
+            '</div>' +
+          '</td>' +
+          '<td><input type="number" step="any" min="0" class="table-input eks-qty" placeholder="0" value="' + Utils.escapeAttr(qtyVal !== undefined ? qtyVal : '') + '" ' + (isViewer ? 'readonly' : '') + ' /></td>' +
+          '<td><input type="number" step="any" min="0" class="table-input eks-kurang" placeholder="0" value="' + Utils.escapeAttr(kurangVal !== undefined ? kurangVal : '') + '" ' + (isViewer ? 'readonly' : '') + ' /></td>' +
+          '<td>' +
+            '<select class="table-select eks-status ' + (isYes ? 'verif-yes' : 'verif-no') + '" ' + (isViewer ? 'disabled' : '') + '>' +
+              '<option value="belum verif"' + (!isYes ? ' selected' : '') + '>belum verif</option>' +
+              '<option value="sudah verif"' + (isYes ? ' selected' : '') + '>sudah verif</option>' +
+            '</select>' +
+          '</td>' +
+          '<td><input type="text" class="table-input eks-note" placeholder="Catatan / Note..." value="' + Utils.escapeAttr(noteVal || '') + '" ' + (isViewer ? 'readonly' : '') + ' /></td>' +
+          '<td style="text-align: center;">' + (!isViewer ? '<button type="button" class="btn btn-danger-soft btn-del-eks">✕</button>' : '') + '</td>';
+
+        const fileInput = tr.querySelector('.eks-ik-file');
+        const thumbImg = tr.querySelector('.row-ik-thumb');
+        const btnUploadIk = tr.querySelector('.btn-upload-row-ik');
+
+        if (btnUploadIk && fileInput) {
+          btnUploadIk.addEventListener('click', function() { fileInput.click(); });
+
+          fileInput.addEventListener('change', async function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            if (!sb) {
+              Utils.showToast('Konfigurasi Supabase belum diisi!');
+              return;
+            }
+
+            btnUploadIk.disabled = true;
+            btnUploadIk.textContent = 'Upload...';
+
+            try {
+              const tahun = document.getElementById('eksporTahun').value;
+              const week = document.getElementById('eksporWeek').value;
+              const blob = await Utils.compressImageToBlob(file, 950, 0.78);
+              const fname = 'ik_' + tahun + '_W' + week + '_' + Date.now() + '.jpg';
+              const publicUrl = await Utils.uploadBlobToStorage('ekspor-ik', fname, blob);
+
+              tr.dataset.ikImage = publicUrl;
+              thumbImg.src = publicUrl;
+              thumbImg.classList.remove('hidden');
+
+              btnUploadIk.textContent = 'Ganti';
+              btnUploadIk.classList.remove('btn-primary');
+              btnUploadIk.classList.add('btn-outline');
+
+              EksporForm.refreshIndicesAndStats();
+              EksporForm.saveDraft();
+              Utils.showToast('Foto IK berhasil diunggah ke cloud');
+            } catch (err) {
+              Utils.showToast('Gagal upload Foto IK: ' + err.message);
+              btnUploadIk.textContent = tr.dataset.ikImage ? 'Ganti' : '+ Foto IK';
+            } finally {
+              btnUploadIk.disabled = false;
+              fileInput.value = '';
+            }
+          });
+        }
+
+        thumbImg.addEventListener('click', function() {
+          const skuName = tr.querySelector('.eks-sku').value.trim();
+          EksporForm.openIkZoom(tr.dataset.ikImage, skuName);
+        });
+
+        const selectEl = tr.querySelector('.eks-status');
+        selectEl.addEventListener('change', function() {
+          if (selectEl.value === 'sudah verif') {
+            selectEl.classList.remove('verif-no');
+            selectEl.classList.add('verif-yes');
+          } else {
+            selectEl.classList.remove('verif-yes');
+            selectEl.classList.add('verif-no');
+          }
+          EksporForm.refreshIndicesAndStats();
+          EksporForm.saveDraft();
+        });
+
+        tr.querySelectorAll('input:not([type="file"])').forEach(function(inp) {
+          inp.addEventListener('input', function() {
+            EksporForm.refreshIndicesAndStats();
+            EksporForm.saveDraft();
+          });
+        });
+
+        const btnDel = tr.querySelector('.btn-del-eks');
+        if (btnDel) {
+          btnDel.addEventListener('click', function() {
+            tr.remove();
+            if (tbody.children.length === 0) {
+              EksporForm.addRow('', '', '', '', '', '', '', 'belum verif', '', true);
+            }
+            EksporForm.refreshIndicesAndStats();
+            EksporForm.saveDraft();
+          });
+        }
+
+        tbody.appendChild(tr);
+        EksporForm.refreshIndicesAndStats();
+        if (!skipSave) EksporForm.saveDraft();
+      },
+
+      refreshIndicesAndStats: function() {
+        const rows = document.querySelectorAll('#eksporTableBody tr');
+        let filledCount = 0, yesCount = 0, noCount = 0, totalKurang = 0;
+
+        rows.forEach(function(row, idx) {
+          row.querySelector('.row-num').textContent = idx + 1;
+          const sku = row.querySelector('.eks-sku').value.trim();
+          const eo = row.querySelector('.eks-eo').value.trim();
+          const kode1 = row.querySelector('.eks-kode1').value.trim();
+          const kode2 = row.querySelector('.eks-kode2').value.trim();
+          const qty = parseFloat(row.querySelector('.eks-qty').value) || 0;
+          const kekurangan = parseFloat(row.querySelector('.eks-kurang').value) || 0;
+          const note = row.querySelector('.eks-note').value.trim();
+          const status = row.querySelector('.eks-status').value;
+          const hasIk = Boolean(row.dataset.ikImage);
+
+          if (sku || eo || kode1 || kode2 || qty > 0 || kekurangan > 0 || note || hasIk) {
+            filledCount++;
+            totalKurang += kekurangan;
+            if (status === 'sudah verif') yesCount++;
+            else noCount++;
+          }
+        });
+
+        document.getElementById('eksporCountTotal').textContent = filledCount;
+        document.getElementById('eksporCountYes').textContent = yesCount;
+        document.getElementById('eksporCountNo').textContent = noCount;
+        document.getElementById('eksporTotalKurang').textContent = Utils.formatNumber(totalKurang);
+      },
+
+      collectData: function() {
+        const items = [];
+        document.querySelectorAll('#eksporTableBody tr').forEach(function(row) {
+          items.push({
+            sku: row.querySelector('.eks-sku').value,
+            ikImage: row.dataset.ikImage || '',
+            nomorEo: row.querySelector('.eks-eo').value,
+            kodefikasi1: row.querySelector('.eks-kode1').value,
+            kodefikasi2: row.querySelector('.eks-kode2').value,
+            qty: row.querySelector('.eks-qty').value,
+            kekurangan: row.querySelector('.eks-kurang').value,
+            statusKet: row.querySelector('.eks-status').value,
+            note: row.querySelector('.eks-note').value
+          });
+        });
+
+        return {
+          tahun: document.getElementById('eksporTahun').value,
+          week: document.getElementById('eksporWeek').value,
+          updatedBy: AppState.user ? AppState.user.nama : document.getElementById('eksporPelapor').value,
+          items: items
+        };
+      },
+
+      saveDraft: function() {
+        if (AppState.isLoadingEkspor) return;
+        const data = EksporForm.collectData();
+        Storage.setLocal(EksporForm.getDraftKey(), JSON.stringify(data));
+        EksporForm.setBadge('Auto-Draft W' + data.week + ' Tersimpan Lokal', '#fefce8', '#854d0e', '#fef08a');
+      },
+
+      resetBlank: function() {
+        Storage.removeLocal(EksporForm.getDraftKey());
+        EksporForm.buildDefault();
+        EksporForm.setBadge('Form Ekspor Dibersihkan', '#f1f5f9', '#334155', '#cbd5e1');
+        Utils.showToast('Isian form kontrol ekspor dibersihkan');
+      },
+
+      submitToCloud: async function() {
+        if (!sb) {
+          Utils.showToast('Konfigurasi Supabase belum diisi!');
+          return;
+        }
+        const payload = EksporForm.collectData();
+
+        const validItems = payload.items.filter(function(i) {
+          return String(i.sku || '').trim() !== '' ||
+                 String(i.nomorEo || '').trim() !== '' ||
+                 String(i.kodefikasi1 || '').trim() !== '' ||
+                 String(i.kodefikasi2 || '').trim() !== '' ||
+                 String(i.ikImage || '').trim() !== '' ||
+                 String(i.note || '').trim() !== '';
+        });
+
+        if (validItems.length === 0) {
+          Utils.showToast('Minimal isi 1 baris kontrol ekspor sebelum menyimpan!');
+          return;
+        }
+
+        const btn = document.getElementById('btnSaveEkspor');
+        btn.disabled = true;
+        btn.textContent = 'Menyimpan Kontrol Ekspor...';
+
+        try {
+          const waktuInput = Utils.getNowWIB();
+          const rowsToInsert = validItems.map(function(item) {
+            return {
+              waktu_input: waktuInput,
+              tahun: payload.tahun,
+              week: payload.week,
+              updated_by: payload.updatedBy,
+              nama_sku: String(item.sku || '').trim(),
+              ik_image_url: String(item.ikImage || '').trim(),
+              nomor_eo: String(item.nomorEo || '').trim(),
+              kodefikasi_1: String(item.kodefikasi1 || '').trim(),
+              kodefikasi_2: String(item.kodefikasi2 || '').trim(),
+              qty_target: parseFloat(item.qty) || 0,
+              kekurangan: parseFloat(item.kekurangan) || 0,
+              status_keterangan: String(item.statusKet || 'belum verif').trim(),
+              note: String(item.note || '').trim()
+            };
+          });
+
+          const { error: delErr } = await sb
+            .from('app_ekspor_log')
+            .delete()
+            .eq('tahun', payload.tahun)
+            .eq('week', payload.week);
+          if (delErr) throw delErr;
+
+          const { error: insErr } = await sb.from('app_ekspor_log').insert(rowsToInsert);
+          if (insErr) throw insErr;
+
+          document.getElementById('eksporPelapor').value = payload.updatedBy;
+          Storage.setLocal(EksporForm.getDraftKey(), JSON.stringify(payload));
+          EksporForm.setBadge('Tersimpan di Cloud (' + waktuInput + ')', '#dcfce7', '#166534', '#bbf7d0');
+          Utils.showToast('Kontrol Dokumen Ekspor Tahun ' + payload.tahun + ' Week ' + payload.week + ' berhasil disimpan!', 4000);
+        } catch (err) {
+          Utils.showToast('Gagal menyimpan kontrol ekspor: ' + err.message, 4000);
+        } finally {
+          btn.disabled = false;
+          btn.textContent = 'Simpan Kontrol Ekspor';
+        }
+      }
+    };
+
+    /* ==========================================================================
+       MENU 4: PREVENTIF MAINTENANCE (WEEKLY - BLOK MESIN + MULTI ACTION PLAN)
+       ========================================================================== */
+    const PmForm = {
+      initSelectors: function() {
+        const yearSel = document.getElementById('pmTahun');
+        const weekSel = document.getElementById('pmWeek');
+        if (yearSel.options.length === 0) {
+          const baseYear = AppState.currentYear || 2026;
+          for (let y = baseYear - 1; y <= baseYear + 2; y++) {
+            const opt = document.createElement('option');
+            opt.value = String(y);
+            opt.textContent = String(y);
+            if (y === baseYear) opt.selected = true;
+            yearSel.appendChild(opt);
+          }
+        }
+        if (weekSel.options.length === 0) {
+          const curWeek = AppState.currentWeek || 47;
+          for (let w = 1; w <= 53; w++) {
+            const opt = document.createElement('option');
+            opt.value = String(w);
+            opt.textContent = 'Week ' + w;
+            if (w === curWeek) opt.selected = true;
+            weekSel.appendChild(opt);
+          }
+        }
+        PmForm.updatePeriodLabel();
+      },
+
+      updatePeriodLabel: function() {
+        const y = document.getElementById('pmTahun').value;
+        const w = document.getElementById('pmWeek').value;
+        document.getElementById('pmPeriodLabel').textContent = 'Tahun ' + y + ' — Week ' + w + ' (All Shift)';
+      },
+
+      getDraftKey: function() {
+        const y = document.getElementById('pmTahun').value || '2026';
+        const w = document.getElementById('pmWeek').value || '47';
+        return 'pm_sb_weekly_' + y + '_W' + w;
+      },
+
+      setBadge: function(text, bg, color, border) {
+        const badge = document.getElementById('pmStatusBadge');
+        badge.textContent = text;
+        badge.style.background = bg;
+        badge.style.color = color;
+        badge.style.borderColor = border;
+      },
+
+      applyPrioClass: function(selectEl) {
+        selectEl.classList.remove('prio-p0', 'prio-p1', 'prio-p2');
+        const val = String(selectEl.value || '').toUpperCase();
+        if (val === 'P0') selectEl.classList.add('prio-p0');
+        else if (val === 'P2') selectEl.classList.add('prio-p2');
+        else selectEl.classList.add('prio-p1');
+      },
+
+      applyStatusClass: function(selectEl) {
+        selectEl.classList.remove('pm-st-open', 'pm-st-progress', 'pm-st-close');
+        const val = String(selectEl.value || '').toLowerCase();
+        if (val === 'close') selectEl.classList.add('pm-st-close');
+        else if (val === 'on progress') selectEl.classList.add('pm-st-progress');
+        else selectEl.classList.add('pm-st-open');
+      },
+
+      loadForYearAndWeek: async function(forceServer) {
+        PmForm.updatePeriodLabel();
+        const tahun = document.getElementById('pmTahun').value;
+        const week = document.getElementById('pmWeek').value;
+        if (!tahun || !week) return;
+
+        if (!forceServer) {
+          const draftRaw = Storage.getLocal(PmForm.getDraftKey());
+          if (draftRaw) {
+            try {
+              const parsed = JSON.parse(draftRaw);
+              PmForm.populate(parsed);
+              PmForm.setBadge('Draft Lokal W' + week + ' Dipulihkan', '#fefce8', '#854d0e', '#fef08a');
+              return;
+            } catch (e) {}
+          }
+        }
+
+        if (!sb) {
+          PmForm.buildDefault();
+          return;
+        }
+
+        AppState.isLoadingPm = true;
+        PmForm.setBadge('Memuat data PM Week ' + week + '...', '#eff6ff', '#1e40af', '#bfdbfe');
+
+        try {
+          const { data, error } = await sb
+            .from('app_pm_log')
+            .select('*')
+            .eq('tahun', tahun)
+            .eq('week', week)
+            .order('id', { ascending: true });
+
+          AppState.isLoadingPm = false;
+
+          if (!error && data && data.length > 0) {
+            const first = data[0];
+            const machines = [];
+            const machineMap = {};
+
+            data.forEach(function(r) {
+              const key = String(r.no_mesin || '') + '::' + String(r.nama_mesin || '');
+              if (!machineMap[key]) {
+                machineMap[key] = { mesin: r.nama_mesin || '', actions: [] };
+                machines.push(machineMap[key]);
+              }
+              machineMap[key].actions.push({
+                actionPlan: r.action_plan === '-' ? '' : (r.action_plan || ''),
+                prioritas: r.skala_prioritas || 'P1',
+                pic: r.pic || 'Teknik',
+                status: r.status || 'Open',
+                keterangan: r.keterangan || ''
+              });
+            });
+
+            PmForm.populate({ machines: machines });
+            if (first.updated_by) document.getElementById('pmPelapor').value = first.updated_by;
+            PmForm.saveDraft();
+            PmForm.setBadge('Data PM W' + week + ' Dimuat (Update: ' + first.waktu_input + ')', '#dcfce7', '#166534', '#bbf7d0');
+          } else {
+            PmForm.buildDefault();
+            PmForm.setBadge('Form Baru Tahun ' + tahun + ' - Week ' + week, '#f1f5f9', '#334155', '#cbd5e1');
+          }
+        } catch (err) {
+          AppState.isLoadingPm = false;
+          PmForm.buildDefault();
+          PmForm.setBadge('Form Baru Tahun ' + tahun + ' - Week ' + week, '#f1f5f9', '#334155', '#cbd5e1');
+        }
+      },
+
+      buildDefault: function() {
+        const container = document.getElementById('pmMachineContainer');
+        container.innerHTML = '';
+        for (let i = 0; i < 4; i++) {
+          PmForm.addMachineBlock('', [
+            { actionPlan: '', prioritas: 'P1', pic: 'Teknik', status: 'Open', keterangan: '' },
+            { actionPlan: '', prioritas: 'P1', pic: 'Teknik', status: 'Open', keterangan: '' }
+          ], true);
+        }
+        PmForm.refreshStats();
+      },
+
+      populate: function(data) {
+        const container = document.getElementById('pmMachineContainer');
+        container.innerHTML = '';
+        const machines = data.machines || [];
+        if (machines.length === 0) {
+          PmForm.buildDefault();
+          return;
+        }
+        machines.forEach(function(m) {
+          const actions = (m.actions && m.actions.length > 0)
+            ? m.actions
+            : [
+                { actionPlan: '', prioritas: 'P1', pic: 'Teknik', status: 'Open', keterangan: '' },
+                { actionPlan: '', prioritas: 'P1', pic: 'Teknik', status: 'Open', keterangan: '' }
+              ];
+          PmForm.addMachineBlock(m.mesin || '', actions, true);
+        });
+        PmForm.refreshStats();
+      },
+
+      addMachineBlock: function(mesinVal, actionsList, skipSave) {
+        const container = document.getElementById('pmMachineContainer');
+        const isViewer = AppState.user && AppState.user.role === 'VIEWER';
+
+        const block = document.createElement('div');
+        block.className = 'pm-machine-block';
+
+        block.innerHTML =
+          '<div class="pm-machine-header">' +
+            '<div class="pm-machine-title-group">' +
+              '<span class="pm-machine-num">Mesin #1</span>' +
+              '<input type="text" class="form-control pm-mesin-name" placeholder="Nama Mesin (cth: Packing H1 / Conveyor Laser / Oven)" value="' + Utils.escapeAttr(mesinVal || '') + '" ' + (isViewer ? 'readonly' : '') + ' />' +
+            '</div>' +
+            (!isViewer
+              ? '<div style="display:flex; gap:6px; align-items:center;">' +
+                  '<button type="button" class="btn btn-outline btn-xs btn-add-pm-action">+ Tambah Baris</button>' +
+                  '<button type="button" class="btn btn-danger-soft btn-xs btn-del-pm-machine">Hapus Mesin</button>' +
+                '</div>'
+              : ''
+            ) +
+          '</div>' +
+          '<div class="pm-action-header-desktop">' +
+            '<div>Action Plan</div>' +
+            '<div>Prioritas</div>' +
+            '<div>PIC</div>' +
+            '<div>Status</div>' +
+            '<div>Keterangan</div>' +
+            '<div style="text-align:center;">Aksi</div>' +
+          '</div>' +
+          '<div class="pm-actions-list"></div>';
+
+        const actionsContainer = block.querySelector('.pm-actions-list');
+        const items = (actionsList && actionsList.length > 0)
+          ? actionsList
+          : [
+              { actionPlan: '', prioritas: 'P1', pic: 'Teknik', status: 'Open', keterangan: '' },
+              { actionPlan: '', prioritas: 'P1', pic: 'Teknik', status: 'Open', keterangan: '' }
+            ];
+
+        items.forEach(function(act) {
+          PmForm.addActionRow(actionsContainer, act, true);
+        });
+
+        block.querySelector('.pm-mesin-name').addEventListener('input', function() {
+          PmForm.refreshStats();
+          PmForm.saveDraft();
+        });
+
+        const btnAddAction = block.querySelector('.btn-add-pm-action');
+        if (btnAddAction) {
+          btnAddAction.addEventListener('click', function() {
+            PmForm.addActionRow(actionsContainer, {
+              actionPlan: '',
+              prioritas: 'P1',
+              pic: 'Teknik',
+              status: 'Open',
+              keterangan: ''
+            }, false);
+          });
+        }
+
+        const btnDelMachine = block.querySelector('.btn-del-pm-machine');
+        if (btnDelMachine) {
+          btnDelMachine.addEventListener('click', function() {
+            block.remove();
+            if (container.children.length === 0) {
+              PmForm.addMachineBlock('', [
+                { actionPlan: '', prioritas: 'P1', pic: 'Teknik', status: 'Open', keterangan: '' },
+                { actionPlan: '', prioritas: 'P1', pic: 'Teknik', status: 'Open', keterangan: '' }
+              ], true);
+            }
+            PmForm.refreshStats();
+            PmForm.saveDraft();
+          });
+        }
+
+        container.appendChild(block);
+        PmForm.refreshStats();
+        if (!skipSave) PmForm.saveDraft();
+      },
+
+      addActionRow: function(actionsContainer, actObj, skipSave) {
+        const isViewer = AppState.user && AppState.user.role === 'VIEWER';
+        const prio = String(actObj.prioritas || 'P1').toUpperCase();
+        const pic = String(actObj.pic || 'Teknik');
+        const status = String(actObj.status || 'Open');
+
+        const row = document.createElement('div');
+        row.className = 'pm-action-row';
+
+        row.innerHTML =
+          '<div class="pm-field-wrap pm-field-action">' +
+            '<label>Action Plan</label>' +
+            '<input type="text" class="table-input pm-act-plan" placeholder="Action plan perbaikan / PM..." value="' + Utils.escapeAttr(actObj.actionPlan || '') + '" ' + (isViewer ? 'readonly' : '') + ' />' +
+          '</div>' +
+          '<div class="pm-field-wrap">' +
+            '<label>Skala Prioritas</label>' +
+            '<select class="table-select pm-act-prio" ' + (isViewer ? 'disabled' : '') + '>' +
+              '<option value="P0"' + (prio === 'P0' ? ' selected' : '') + '>P0</option>' +
+              '<option value="P1"' + (prio === 'P1' ? ' selected' : '') + '>P1</option>' +
+              '<option value="P2"' + (prio === 'P2' ? ' selected' : '') + '>P2</option>' +
+            '</select>' +
+          '</div>' +
+          '<div class="pm-field-wrap">' +
+            '<label>PIC</label>' +
+            '<select class="table-select pm-act-pic" ' + (isViewer ? 'disabled' : '') + '>' +
+              '<option value="Teknik"' + (pic === 'Teknik' ? ' selected' : '') + '>Teknik</option>' +
+              '<option value="Produksi"' + (pic === 'Produksi' ? ' selected' : '') + '>Produksi</option>' +
+            '</select>' +
+          '</div>' +
+          '<div class="pm-field-wrap">' +
+            '<label>Status</label>' +
+            '<select class="table-select pm-act-status" ' + (isViewer ? 'disabled' : '') + '>' +
+              '<option value="Open"' + (status.toLowerCase() === 'open' ? ' selected' : '') + '>Open</option>' +
+              '<option value="On Progress"' + (status.toLowerCase() === 'on progress' ? ' selected' : '') + '>On Progress</option>' +
+              '<option value="Close"' + (status.toLowerCase() === 'close' ? ' selected' : '') + '>Close</option>' +
+            '</select>' +
+          '</div>' +
+          '<div class="pm-field-wrap pm-field-ket">' +
+            '<label>Keterangan</label>' +
+            '<input type="text" class="table-input pm-act-ket" placeholder="Keterangan..." value="' + Utils.escapeAttr(actObj.keterangan || '') + '" ' + (isViewer ? 'readonly' : '') + ' />' +
+          '</div>' +
+          '<div class="pm-field-wrap pm-field-del" style="text-align:center;">' +
+            (!isViewer ? '<button type="button" class="btn btn-danger-soft btn-del-pm-act">✕</button>' : '') +
+          '</div>';
+
+        const prioSel = row.querySelector('.pm-act-prio');
+        const statusSel = row.querySelector('.pm-act-status');
+
+        PmForm.applyPrioClass(prioSel);
+        PmForm.applyStatusClass(statusSel);
+
+        prioSel.addEventListener('change', function() {
+          PmForm.applyPrioClass(prioSel);
+          PmForm.refreshStats();
+          PmForm.saveDraft();
+        });
+
+        statusSel.addEventListener('change', function() {
+          PmForm.applyStatusClass(statusSel);
+          PmForm.refreshStats();
+          PmForm.saveDraft();
+        });
+
+        row.querySelector('.pm-act-pic').addEventListener('change', PmForm.saveDraft);
+
+        row.querySelectorAll('input').forEach(function(inp) {
+          inp.addEventListener('input', function() {
+            PmForm.refreshStats();
+            PmForm.saveDraft();
+          });
+        });
+
+        const btnDelAct = row.querySelector('.btn-del-pm-act');
+        if (btnDelAct) {
+          btnDelAct.addEventListener('click', function() {
+            row.remove();
+            if (actionsContainer.children.length === 0) {
+              PmForm.addActionRow(actionsContainer, {
+                actionPlan: '',
+                prioritas: 'P1',
+                pic: 'Teknik',
+                status: 'Open',
+                keterangan: ''
+              }, true);
+            }
+            PmForm.refreshStats();
+            PmForm.saveDraft();
+          });
+        }
+
+        actionsContainer.appendChild(row);
+        PmForm.refreshStats();
+        if (!skipSave) PmForm.saveDraft();
+      },
+
+      refreshStats: function() {
+        const blocks = document.querySelectorAll('#pmMachineContainer .pm-machine-block');
+        let activeMachines = 0, totalActions = 0, countP0 = 0, countOpen = 0, countProgress = 0, countClose = 0;
+
+        blocks.forEach(function(block, idx) {
+          block.querySelector('.pm-machine-num').textContent = 'Mesin #' + (idx + 1);
+          const mName = block.querySelector('.pm-mesin-name').value.trim();
+          const actRows = block.querySelectorAll('.pm-action-row');
+          let machineHasAction = false;
+
+          actRows.forEach(function(r) {
+            const plan = r.querySelector('.pm-act-plan').value.trim();
+            const ket = r.querySelector('.pm-act-ket').value.trim();
+            const prio = r.querySelector('.pm-act-prio').value;
+            const st = r.querySelector('.pm-act-status').value.toLowerCase();
+
+            if (plan || ket) {
+              machineHasAction = true;
+              totalActions++;
+              if (prio === 'P0') countP0++;
+              if (st === 'open') countOpen++;
+              else if (st === 'on progress') countProgress++;
+              else if (st === 'close') countClose++;
+            }
+          });
+
+          if (mName || machineHasAction) activeMachines++;
+        });
+
+        document.getElementById('pmCountMachine').textContent = activeMachines;
+        document.getElementById('pmCountAction').textContent = totalActions;
+        document.getElementById('pmCountP0').textContent = countP0;
+        document.getElementById('pmCountOpen').textContent = countOpen;
+        document.getElementById('pmCountProgress').textContent = countProgress;
+        document.getElementById('pmCountClose').textContent = countClose;
+      },
+
+      collectData: function() {
+        const machines = [];
+        document.querySelectorAll('#pmMachineContainer .pm-machine-block').forEach(function(block) {
+          const actions = [];
+          block.querySelectorAll('.pm-action-row').forEach(function(r) {
+            actions.push({
+              actionPlan: r.querySelector('.pm-act-plan').value,
+              prioritas: r.querySelector('.pm-act-prio').value,
+              pic: r.querySelector('.pm-act-pic').value,
+              status: r.querySelector('.pm-act-status').value,
+              keterangan: r.querySelector('.pm-act-ket').value
+            });
+          });
+          machines.push({
+            mesin: block.querySelector('.pm-mesin-name').value,
+            actions: actions
+          });
+        });
+
+        return {
+          tahun: document.getElementById('pmTahun').value,
+          week: document.getElementById('pmWeek').value,
+          updatedBy: AppState.user ? AppState.user.nama : document.getElementById('pmPelapor').value,
+          machines: machines
+        };
+      },
+
+      saveDraft: function() {
+        if (AppState.isLoadingPm) return;
+        const data = PmForm.collectData();
+        Storage.setLocal(PmForm.getDraftKey(), JSON.stringify(data));
+        PmForm.setBadge('Auto-Draft PM W' + data.week + ' Tersimpan Lokal', '#fefce8', '#854d0e', '#fef08a');
+      },
+
+      resetBlank: function() {
+        Storage.removeLocal(PmForm.getDraftKey());
+        PmForm.buildDefault();
+        PmForm.setBadge('Form PM Dibersihkan', '#f1f5f9', '#334155', '#cbd5e1');
+        Utils.showToast('Isian form Preventif Maintenance dibersihkan');
+      },
+
+      submitToCloud: async function() {
+        if (!sb) {
+          Utils.showToast('Konfigurasi Supabase belum diisi!');
+          return;
+        }
+        const payload = PmForm.collectData();
+
+        const rowsToInsert = [];
+        const waktuInput = Utils.getNowWIB();
+        let machineIndex = 0;
+
+        payload.machines.forEach(function(m) {
+          const namaMesin = String(m.mesin || '').trim();
+          const validActions = (m.actions || []).filter(function(a) {
+            return String(a.actionPlan || '').trim() !== '' ||
+                   String(a.keterangan || '').trim() !== '';
+          });
+
+          if (!namaMesin && validActions.length === 0) return;
+
+          machineIndex++;
+          if (validActions.length === 0) {
+            rowsToInsert.push({
+              waktu_input: waktuInput,
+              tahun: payload.tahun,
+              week: payload.week,
+              updated_by: payload.updatedBy,
+              no_mesin: String(machineIndex),
+              nama_mesin: namaMesin,
+              action_plan: '-',
+              skala_prioritas: 'P1',
+              pic: 'Teknik',
+              status: 'Open',
+              keterangan: ''
+            });
+          } else {
+            validActions.forEach(function(a) {
+              rowsToInsert.push({
+                waktu_input: waktuInput,
+                tahun: payload.tahun,
+                week: payload.week,
+                updated_by: payload.updatedBy,
+                no_mesin: String(machineIndex),
+                nama_mesin: namaMesin,
+                action_plan: String(a.actionPlan || '').trim(),
+                skala_prioritas: String(a.prioritas || 'P1').trim(),
+                pic: String(a.pic || 'Teknik').trim(),
+                status: String(a.status || 'Open').trim(),
+                keterangan: String(a.keterangan || '').trim()
+              });
+            });
+          }
+        });
+
+        if (rowsToInsert.length === 0) {
+          Utils.showToast('Minimal isi 1 nama mesin atau action plan sebelum menyimpan!');
+          return;
+        }
+
+        const btn = document.getElementById('btnSavePm');
+        btn.disabled = true;
+        btn.textContent = 'Menyimpan Preventif Maintenance...';
+
+        try {
+          const { error: delErr } = await sb
+            .from('app_pm_log')
+            .delete()
+            .eq('tahun', payload.tahun)
+            .eq('week', payload.week);
+          if (delErr) throw delErr;
+
+          const { error: insErr } = await sb.from('app_pm_log').insert(rowsToInsert);
+          if (insErr) throw insErr;
+
+          document.getElementById('pmPelapor').value = payload.updatedBy;
+          Storage.setLocal(PmForm.getDraftKey(), JSON.stringify(payload));
+          PmForm.setBadge('Tersimpan di Cloud (' + waktuInput + ')', '#dcfce7', '#166534', '#bbf7d0');
+          Utils.showToast('Preventif Maintenance Tahun ' + payload.tahun + ' Week ' + payload.week + ' berhasil disimpan!', 4000);
+        } catch (err) {
+          Utils.showToast('Gagal menyimpan Preventif Maintenance: ' + err.message, 4000);
+        } finally {
+          btn.disabled = false;
+          btn.textContent = 'Simpan Preventif Maintenance';
+        }
+      }
+    };
+
+    /* ==========================================================================
+       INISIALISASI EVENT SAAT HALAMAN DIMUAT
+       ========================================================================== */
+    document.addEventListener('DOMContentLoaded', function() {
+      Auth.initConnection();
+
+      // Login
+      document.getElementById('btnLoginSubmit').addEventListener('click', Auth.login);
+      document.getElementById('loginUsername').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') Auth.login();
+      });
+      document.getElementById('loginPassword').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') Auth.login();
+      });
+
+      // Sidebar & Navigasi
+      document.getElementById('btnMobileMenu').addEventListener('click', Navigation.toggleSidebar);
+      document.getElementById('sidebarOverlay').addEventListener('click', Navigation.closeSidebar);
+      document.getElementById('navDashboard').addEventListener('click', function() { Navigation.switchTab('dashboard'); });
+      document.getElementById('navLaporan').addEventListener('click', function() { Navigation.switchTab('laporan'); });
+      document.getElementById('navEkspor').addEventListener('click', function() { Navigation.switchTab('ekspor'); });
+      document.getElementById('navPm').addEventListener('click', function() { Navigation.switchTab('pm'); });
+      document.getElementById('btnSyncData').addEventListener('click', Dashboard.syncAll);
+      document.getElementById('btnLogout').addEventListener('click', Auth.logout);
+
+      // Dashboard
+      document.getElementById('dashDateFilter').addEventListener('change', Dashboard.loadByDate);
+      document.getElementById('btnUploadPlanning').addEventListener('click', function() {
+        document.getElementById('planningFileInput').click();
+      });
+      document.getElementById('planningFileInput').addEventListener('change', Dashboard.uploadPlanning);
+
+      // Form LHP
+      document.getElementById('lhpTanggal').addEventListener('change', LhpForm.loadForDateAndShift);
+      document.getElementById('lhpShift').addEventListener('change', LhpForm.loadForDateAndShift);
+      document.getElementById('btnAddSku').addEventListener('click', function() { LhpForm.addSkuRow(); });
+      document.getElementById('btnAddDt').addEventListener('click', function() { LhpForm.addDtRow(); });
+      document.getElementById('btnAddKendala').addEventListener('click', function() { LhpForm.addKendalaRow(); });
+      document.getElementById('btnResetForm').addEventListener('click', LhpForm.resetBlank);
+      document.getElementById('btnSaveLhp').addEventListener('click', LhpForm.submitToCloud);
+
+      // Form Kontrol Ekspor Weekly
+      document.getElementById('eksporTahun').addEventListener('change', function() { EksporForm.loadForYearAndWeek(false); });
+      document.getElementById('eksporWeek').addEventListener('change', function() { EksporForm.loadForYearAndWeek(false); });
+      document.getElementById('btnCloseIkZoom').addEventListener('click', function() {
+        document.getElementById('ikZoomModal').classList.add('hidden');
+      });
+      document.getElementById('btnAddEksporRow').addEventListener('click', function() {
+        EksporForm.addRow('', '', '', '', '', '', '', 'belum verif', '');
+      });
+      document.getElementById('btnAddEkspor5Rows').addEventListener('click', function() {
+        for (let i = 0; i < 5; i++) {
+          EksporForm.addRow('', '', '', '', '', '', '', 'belum verif', '', true);
+        }
+        EksporForm.saveDraft();
+        Utils.showToast('5 baris baru ditambahkan');
+      });
+      document.getElementById('btnResetEkspor').addEventListener('click', EksporForm.resetBlank);
+      document.getElementById('btnSaveEkspor').addEventListener('click', EksporForm.submitToCloud);
+
+      // Form Preventif Maintenance Weekly
+      document.getElementById('pmTahun').addEventListener('change', function() { PmForm.loadForYearAndWeek(false); });
+      document.getElementById('pmWeek').addEventListener('change', function() { PmForm.loadForYearAndWeek(false); });
+      document.getElementById('btnAddPmMachine').addEventListener('click', function() {
+        PmForm.addMachineBlock('', [
+          { actionPlan: '', prioritas: 'P1', pic: 'Teknik', status: 'Open', keterangan: '' },
+          { actionPlan: '', prioritas: 'P1', pic: 'Teknik', status: 'Open', keterangan: '' }
+        ], false);
+      });
+      document.getElementById('btnResetPm').addEventListener('click', PmForm.resetBlank);
+      document.getElementById('btnSavePm').addEventListener('click', PmForm.submitToCloud);
+
+      // Modal Summary WA
+      document.getElementById('btnPreviewSummary').addEventListener('click', function() { LhpForm.openSummaryModal(); });
+      document.getElementById('btnCloseSummary').addEventListener('click', LhpForm.closeSummaryModal);
+      document.getElementById('btnCloseSummaryX').addEventListener('click', LhpForm.closeSummaryModal);
+      document.getElementById('btnCopySummary').addEventListener('click', LhpForm.copySummaryText);
+
+      // Auto-draft WIP & 4 Kategori Waste
+      ['wipAwal', 'wipAkhir', 'wasteBersihLokal', 'wasteBersihEkspor', 'wasteKotorLokal', 'wasteKotorEkspor'].forEach(function(id) {
+        document.getElementById(id).addEventListener('input', LhpForm.saveDraft);
+      });
+
+      // Cek sesi login aktif
+      const savedUser = Storage.getSession('pcs_user_sb');
+      if (savedUser) {
+        try {
+          AppState.user = JSON.parse(savedUser);
+          if (AppState.user && AppState.user.username) {
+            Auth.enterApp();
+          }
+        } catch (e) {
+          Storage.removeSession('pcs_user_sb');
+        }
+      }
+    });
+  </script>
+</body>
+</html>
